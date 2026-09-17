@@ -19,6 +19,7 @@ plugins/*
 !plugins/XmlImportExport
 !plugins/Gravatar
 !plugins/ModernTheme
+!plugins/ModernThemeDarkOrangeUI
 
 # IDE/Editor temporary files
 *~
