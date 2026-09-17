@@ -194,6 +194,12 @@ $t_max_per_cell = 200;
 $t_project_name = project_get_name( $t_project_id );
 $t_total_cards = count( $t_rows );
 
+$t_rank_bug_ids = array();
+foreach( $t_rows as $t_rank_bug ) {
+	$t_rank_bug_ids[] = (int)$t_rank_bug->id;
+}
+$t_rank_map = KanbanIssueHelper::rank_map_for_bug_ids( $t_rank_bug_ids );
+
 layout_page_header_begin( plugin_lang_get( 'title' ) );
 layout_page_header_end( 'kanban-board-page' );
 layout_page_begin( $t_board_url );
@@ -268,6 +274,7 @@ foreach( $t_lanes as $t_lane ) {
 <?php
 	foreach( $t_statuses as $t_status_id => $t_status_code ) {
 		$t_issues = isset( $t_lane['bugs'][(int)$t_status_id] ) ? $t_lane['bugs'][(int)$t_status_id] : array();
+		KanbanIssueHelper::sort_bugs_by_rank( $t_issues, $t_rank_map );
 		$t_shown = array_slice( $t_issues, 0, $t_max_per_cell );
 		$t_hidden = count( $t_issues ) - count( $t_shown );
 		?>

@@ -116,6 +116,217 @@ class KanbanIssueHelper {
 		return (int)date_strtotime( $t_val );
 	}
 
+	/**
+	 * Rank table name for this plugin.
+	 *
+	 * @return string
+	 */
+	public static function rank_table() {
+		return plugin_table( 'rank', 'Kanban' );
+	}
+
+	/**
+	 * Whether the rank table exists (plugin schema upgraded).
+	 *
+	 * @return bool
+	 */
+	public static function rank_table_exists() {
+		return db_table_exists( self::rank_table() );
+	}
+
+	/**
+	 * Parse an ordered bug id list from POST/GET (array or comma-separated).
+	 *
+	 * @param string $p_var_name GPC variable name.
+	 *
+	 * @return int[]
+	 */
+	public static function parse_gpc_bug_id_list( $p_var_name ) {
+		gpc_make_array( $p_var_name );
+		if( gpc_isset( $p_var_name ) ) {
+			$t_val = gpc_get( $p_var_name, '' );
+			if( is_array( $t_val ) ) {
+				return array_values( array_filter( array_map( 'intval', $t_val ) ) );
+			}
+			if( is_string( $t_val ) && $t_val !== '' ) {
+				$t_out = array();
+				foreach( explode( ',', $t_val ) as $t_part ) {
+					$t_id = (int)trim( $t_part );
+					if( $t_id > 0 ) {
+						$t_out[] = $t_id;
+					}
+				}
+				return $t_out;
+			}
+		}
+
+		# Some clients send bug_ids[] as the literal key name.
+		$t_bracket_key = $p_var_name . '[]';
+		if( isset( $_POST[$t_bracket_key] ) && is_array( $_POST[$t_bracket_key] ) ) {
+			return array_values( array_filter( array_map( 'intval', $_POST[$t_bracket_key] ) ) );
+		}
+		if( isset( $_GET[$t_bracket_key] ) && is_array( $_GET[$t_bracket_key] ) ) {
+			return array_values( array_filter( array_map( 'intval', $_GET[$t_bracket_key] ) ) );
+		}
+
+		return array();
+	}
+
+	/**
+	 * Load bug_id => position for the given issues.
+	 *
+	 * @param int[] $p_bug_ids Bug ids.
+	 *
+	 * @return array<int, int>
+	 */
+	public static function rank_map_for_bug_ids( array $p_bug_ids ) {
+		$p_bug_ids = array_values( array_unique( array_filter( array_map( 'intval', $p_bug_ids ) ) ) );
+		if( empty( $p_bug_ids ) || !self::rank_table_exists() ) {
+			return array();
+		}
+
+		$t_table = self::rank_table();
+		$t_params = array();
+		$t_placeholders = array();
+		foreach( $p_bug_ids as $t_id ) {
+			$t_placeholders[] = db_param();
+			$t_params[] = $t_id;
+		}
+
+		$t_query = 'SELECT bug_id, position FROM ' . $t_table
+			. ' WHERE bug_id IN (' . implode( ', ', $t_placeholders ) . ')';
+		$t_result = db_query( $t_query, $t_params );
+
+		$t_map = array();
+		while( $t_row = db_fetch_array( $t_result ) ) {
+			$t_map[(int)$t_row['bug_id']] = (int)$t_row['position'];
+		}
+		return $t_map;
+	}
+
+	/**
+	 * Sort bug rows for display (lower position = higher on the board).
+	 *
+	 * @param array       $p_bugs    BugData[] (by reference).
+	 * @param array<int,int> $p_rank_map bug_id => position.
+	 *
+	 * @return void
+	 */
+	public static function sort_bugs_by_rank( array &$p_bugs, array $p_rank_map ) {
+		usort(
+			$p_bugs,
+			function( $p_a, $p_b ) use ( $p_rank_map ) {
+				$t_a_id = (int)$p_a->id;
+				$t_b_id = (int)$p_b->id;
+				$t_a_rank = isset( $p_rank_map[$t_a_id] ) ? $p_rank_map[$t_a_id] : PHP_INT_MAX;
+				$t_b_rank = isset( $p_rank_map[$t_b_id] ) ? $p_rank_map[$t_b_id] : PHP_INT_MAX;
+				if( $t_a_rank !== $t_b_rank ) {
+					return $t_a_rank - $t_b_rank;
+				}
+				$t_a_updated = (int)$p_a->last_updated;
+				$t_b_updated = (int)$p_b->last_updated;
+				if( $t_a_updated !== $t_b_updated ) {
+					return $t_b_updated - $t_a_updated;
+				}
+				return $t_b_id - $t_a_id;
+			}
+		);
+	}
+
+	/**
+	 * Persist card order (position 0 = top) for the given bug ids.
+	 *
+	 * @param int[] $p_bug_ids Ordered bug ids.
+	 *
+	 * @return void
+	 */
+	public static function save_cell_order( array $p_bug_ids ) {
+		if( !self::rank_table_exists() ) {
+			return;
+		}
+
+		$t_table = self::rank_table();
+		$t_pos = 0;
+		foreach( $p_bug_ids as $t_bug_id ) {
+			$t_bug_id = (int)$t_bug_id;
+			if( $t_bug_id <= 0 || !bug_exists( $t_bug_id ) ) {
+				continue;
+			}
+			db_query( 'DELETE FROM ' . $t_table . ' WHERE bug_id=' . db_param(), array( $t_bug_id ) );
+			db_query(
+				'INSERT INTO ' . $t_table . ' (bug_id, position) VALUES (' . db_param() . ', ' . db_param() . ')',
+				array( $t_bug_id, $t_pos )
+			);
+			$t_pos++;
+		}
+	}
+
+	/**
+	 * Bug ids in a Kanban cell (project + status + target version).
+	 *
+	 * @param int    $p_project_id     Project id.
+	 * @param int    $p_status         Status id.
+	 * @param string $p_target_version Target version name (empty = none).
+	 *
+	 * @return int[]
+	 */
+	public static function bug_ids_in_cell( $p_project_id, $p_status, $p_target_version ) {
+		$t_closed = (int)config_get( 'bug_closed_status_threshold', null, null, $p_project_id );
+		$t_query = 'SELECT id FROM ' . db_get_table( 'bug' )
+			. ' WHERE project_id=' . db_param()
+			. ' AND status=' . db_param()
+			. ' AND status < ' . db_param();
+		$t_params = array( (int)$p_project_id, (int)$p_status, $t_closed );
+
+		if( (string)$p_target_version === '' ) {
+			$t_query .= ' AND (target_version=' . db_param() . ' OR target_version IS NULL)';
+			$t_params[] = '';
+		} else {
+			$t_query .= ' AND target_version=' . db_param();
+			$t_params[] = (string)$p_target_version;
+		}
+
+		$t_result = db_query( $t_query, $t_params );
+		$t_ids = array();
+		while( $t_row = db_fetch_array( $t_result ) ) {
+			$t_ids[] = (int)$t_row['id'];
+		}
+		return $t_ids;
+	}
+
+	/**
+	 * Place a new issue at the end of its Kanban cell.
+	 *
+	 * @param int    $p_bug_id         New bug id.
+	 * @param int    $p_project_id     Project id.
+	 * @param int    $p_status         Status id.
+	 * @param string $p_target_version Target version.
+	 *
+	 * @return void
+	 */
+	public static function append_rank_to_cell( $p_bug_id, $p_project_id, $p_status, $p_target_version ) {
+		if( !self::rank_table_exists() ) {
+			return;
+		}
+
+		$t_ids = self::bug_ids_in_cell( $p_project_id, $p_status, $p_target_version );
+		$t_map = self::rank_map_for_bug_ids( $t_ids );
+		$t_max = -1;
+		foreach( $t_ids as $t_id ) {
+			if( isset( $t_map[$t_id] ) && $t_map[$t_id] > $t_max ) {
+				$t_max = $t_map[$t_id];
+			}
+		}
+
+		$t_table = self::rank_table();
+		$t_bug_id = (int)$p_bug_id;
+		db_query( 'DELETE FROM ' . $t_table . ' WHERE bug_id=' . db_param(), array( $t_bug_id ) );
+		db_query(
+			'INSERT INTO ' . $t_table . ' (bug_id, position) VALUES (' . db_param() . ', ' . db_param() . ')',
+			array( $t_bug_id, $t_max + 1 )
+		);
+	}
+
 	public static function sorted_version_rows( $p_project_id ) {
 		$t_rows = version_get_all_rows( $p_project_id, VERSION_ALL, false );
 		usort(
@@ -487,6 +698,12 @@ class KanbanIssueHelper {
 
 		$t_bug_id = $t_bug->create();
 		self::sync_tags( $t_bug_id, gpc_get_string( 'tag_string', '' ) );
+		self::append_rank_to_cell(
+			$t_bug_id,
+			$f_project_id,
+			(int)$t_bug->status,
+			(string)$t_bug->target_version
+		);
 
 		return $t_bug_id;
 	}

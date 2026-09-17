@@ -127,6 +127,55 @@
 		}
 	}
 
+	function cardsInCell(cell) {
+		if (!cell) {
+			return [];
+		}
+		return Array.prototype.slice.call(cell.querySelectorAll('.kanban-card'));
+	}
+
+	function bugIdsInCell(cell) {
+		return cardsInCell(cell).map(function (c) {
+			return parseInt(c.getAttribute('data-bug-id'), 10);
+		}).filter(function (id) {
+			return id > 0;
+		});
+	}
+
+	function insertCardAtPoint(cell, card, clientX, clientY) {
+		var cards = cardsInCell(cell).filter(function (c) {
+			return c !== card;
+		});
+		var insertBefore = null;
+		var i;
+		for (i = 0; i < cards.length; i++) {
+			var rect = cards[i].getBoundingClientRect();
+			var midY = rect.top + rect.height / 2;
+			if (clientY < midY) {
+				insertBefore = cards[i];
+				break;
+			}
+		}
+		var empty = cell.querySelector('.kanban-empty');
+		if (empty) {
+			empty.parentNode.removeChild(empty);
+		}
+		if (insertBefore) {
+			cell.insertBefore(card, insertBefore);
+		} else {
+			cell.appendChild(card);
+		}
+	}
+
+	function revertCardPosition(card, cell, nextSibling) {
+		if (nextSibling && nextSibling.parentNode === cell) {
+			cell.insertBefore(card, nextSibling);
+		} else {
+			cell.appendChild(card);
+		}
+		refreshCellEmpty(cell);
+	}
+
 	function showDialogError(message) {
 		if (!dialogError) {
 			return;
@@ -525,11 +574,17 @@
 		});
 	}
 
-	function postMove(bugId, status, targetVersion) {
+	function postMove(bugId, status, targetVersion, bugIds, sourceBugIds) {
 		var body = new URLSearchParams();
 		body.set('bug_id', String(bugId));
 		body.set('status', String(status));
 		body.set('target_version', targetVersion === null || targetVersion === undefined ? '' : String(targetVersion));
+		if (bugIds && bugIds.length) {
+			body.set('bug_ids', bugIds.join(','));
+		}
+		if (sourceBugIds && sourceBugIds.length) {
+			body.set('source_bug_ids', sourceBugIds.join(','));
+		}
 		if (tokenName && tokenValue) {
 			body.set(tokenName, tokenValue);
 		}
@@ -655,6 +710,7 @@
 		var bugId = drag.bugId;
 		var oldLane = drag.lane;
 		var moved = drag.moved;
+		var insertRef = drag.insertRef;
 
 		if (drag.ghost && drag.ghost.parentNode) {
 			drag.ghost.parentNode.removeChild(drag.ghost);
@@ -686,38 +742,45 @@
 			return;
 		}
 
-		if (newStatus === oldStatus && newLane === oldLane) {
-			return;
+		var sameCell = String(newStatus) === String(oldStatus) && String(newLane) === String(oldLane);
+
+		insertCardAtPoint(cell, card, e.clientX, e.clientY);
+
+		if (!sameCell) {
+			refreshCellEmpty(sourceCell);
+			if (oldStatus !== newStatus) {
+				updateStatusCount(oldStatus, -1);
+				updateStatusCount(newStatus, 1);
+			}
+			if (oldLane !== newLane) {
+				updateLaneCount(oldLane, -1);
+				updateLaneCount(newLane, 1);
+			}
 		}
 
-		var emptyInTarget = cell.querySelector('.kanban-empty');
-		if (emptyInTarget) {
-			emptyInTarget.parentNode.removeChild(emptyInTarget);
-		}
+		var destIds = bugIdsInCell(cell);
+		var sourceIds = sameCell ? null : bugIdsInCell(sourceCell);
 
-		cell.appendChild(card);
-		refreshCellEmpty(sourceCell);
-		if (oldStatus !== newStatus) {
-			updateStatusCount(oldStatus, -1);
-			updateStatusCount(newStatus, 1);
-		}
-		if (oldLane !== newLane) {
-			updateLaneCount(oldLane, -1);
-			updateLaneCount(newLane, 1);
-		}
-
-		postMove(bugId, newStatus, newLane).then(function (result) {
+		postMove(bugId, newStatus, newLane, destIds, sourceIds).then(function (result) {
 			if (result.data && result.data.ok) {
-				if (oldLane !== newLane) {
+				if (!sameCell && oldLane !== newLane) {
 					syncCardLaneMeta(card, newLane);
 				}
 				return;
 			}
-			revertMove(card, sourceCell, cell, oldStatus, newStatus, oldLane, newLane);
+			if (sameCell) {
+				revertCardPosition(card, sourceCell, insertRef);
+			} else {
+				revertMove(card, sourceCell, cell, oldStatus, newStatus, oldLane, newLane);
+			}
 			var msg = (result.data && result.data.message) ? result.data.message : 'Move failed';
 			window.alert(msg);
 		}).catch(function () {
-			revertMove(card, sourceCell, cell, oldStatus, newStatus, oldLane, newLane);
+			if (sameCell) {
+				revertCardPosition(card, sourceCell, insertRef);
+			} else {
+				revertMove(card, sourceCell, cell, oldStatus, newStatus, oldLane, newLane);
+			}
 			window.alert('Move failed');
 		});
 	}
@@ -787,6 +850,7 @@
 			status: cellStatus(cell),
 			lane: cellLane(cell),
 			bugId: card.getAttribute('data-bug-id'),
+			insertRef: card.nextElementSibling,
 			startX: e.clientX,
 			startY: e.clientY,
 			ghost: null,

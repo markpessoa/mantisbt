@@ -42,7 +42,7 @@ class KanbanPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = '';
 
-		$this->version = '1.3.4';
+		$this->version = '1.4.1';
 		$this->requires = array(
 			'MantisCore' => '2.25.0',
 		);
@@ -76,6 +76,31 @@ class KanbanPlugin extends MantisPlugin {
 		if( is_array( $g_plugin_mime_types ) ) {
 			$g_plugin_mime_types['woff2'] = 'font/woff2';
 		}
+	}
+
+	/**
+	 * Database schema for card rank positions.
+	 *
+	 * @return array
+	 */
+	function schema() {
+		$t_table_options = array(
+			'mysql' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8',
+			'pgsql' => 'WITHOUT OIDS',
+		);
+
+		return array(
+			array(
+				'CreateTableSQL',
+				array(
+					plugin_table( 'rank' ),
+					"
+	bug_id					I		UNSIGNED NOTNULL PRIMARY,
+	position				I		NOTNULL DEFAULT '0' ",
+					$t_table_options,
+				),
+			),
+		);
 	}
 
 	/**
