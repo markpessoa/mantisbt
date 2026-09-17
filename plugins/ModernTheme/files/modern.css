@@ -1,0 +1,731 @@
+/*
+ * ModernTheme — slate + blue (Tailwind-like) overrides for Ace/Bootstrap.
+ * Dark mode: class modern-theme-dark on <html>.
+ */
+
+body.skin-3,
+body.login-layout {
+	--mt-slate-50: #f8fafc;
+	--mt-slate-100: #f1f5f9;
+	--mt-slate-200: #e2e8f0;
+	--mt-slate-300: #cbd5e1;
+	--mt-slate-400: #94a3b8;
+	--mt-slate-500: #64748b;
+	--mt-slate-600: #475569;
+	--mt-slate-700: #334155;
+	--mt-slate-800: #1e293b;
+	--mt-slate-900: #0f172a;
+	--mt-blue-50: #eff6ff;
+	--mt-blue-500: #3b82f6;
+	--mt-blue-600: #2563eb;
+	--mt-blue-700: #1d4ed8;
+	--mt-surface: #ffffff;
+	--mt-bg: #f1f5f9;
+	--mt-text: #0f172a;
+	--mt-text-muted: #475569;
+	--mt-link: #1d4ed8;
+	--mt-link-hover: #1e40af;
+	--mt-nav-bg: #0f172a;
+	--mt-nav-text: #cbd5e1;
+	--mt-nav-hover: #1e293b;
+	--mt-nav-active: #2563eb;
+	--mt-radius: 10px;
+	--mt-radius-sm: 6px;
+	--mt-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+	--mt-shadow-md: 0 1px 3px rgb(15 23 42 / 0.08);
+	color: var(--mt-text);
+}
+
+/* Windows 11 dark (Fluent) — charcoal, no blue accent */
+html.modern-theme-dark body.skin-3,
+html.modern-theme-dark body.login-layout {
+	--mt-slate-50: #323232;
+	--mt-slate-100: #2b2b2b;
+	--mt-slate-200: #3f3f3f;
+	--mt-slate-300: #4a4a4a;
+	--mt-slate-400: #9a9a9a;
+	--mt-slate-500: #c5c5c5;
+	--mt-slate-600: #e5e5e5;
+	--mt-slate-700: #3f3f3f;
+	--mt-slate-800: #2b2b2b;
+	--mt-slate-900: #1c1c1c;
+	--mt-blue-50: #323232;
+	--mt-blue-500: #4a4a4a;
+	--mt-blue-600: #4a4a4a;
+	--mt-blue-700: #5a5a5a;
+	--mt-surface: #2b2b2b;
+	--mt-bg: #202020;
+	--mt-text: #ffffff;
+	--mt-text-muted: #c5c5c5;
+	--mt-link: #ffffff;
+	--mt-link-hover: #e5e5e5;
+	--mt-nav-bg: #1c1c1c;
+	--mt-nav-text: #e5e5e5;
+	--mt-nav-hover: #323232;
+	--mt-nav-active: #3c3c3c;
+	--mt-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+	--mt-shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
+}
+
+body.skin-3 {
+	background-color: var(--mt-bg) !important;
+}
+
+body.skin-3 .main-container:before {
+	background: none !important;
+}
+
+body.skin-3 .page-content {
+	background-color: transparent;
+	padding: 16px 20px 32px;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .main-content {
+	background-color: var(--mt-bg);
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .page-header h1,
+body.skin-3 .page-header h1 small {
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 h1,
+body.skin-3 h2,
+body.skin-3 h3,
+body.skin-3 h4 {
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	color: var(--mt-text) !important;
+}
+
+/* Navbar */
+body.skin-3 .navbar,
+body.skin-3 .navbar.navbar-collapse {
+	background: var(--mt-nav-bg) !important;
+	border: none;
+	box-shadow: var(--mt-shadow-md);
+}
+
+body.skin-3 .navbar .navbar-brand {
+	color: #fff !important;
+}
+
+/* Visible even if JS cannot move the control into ul.ace-nav */
+body.skin-3 a.modern-theme-toggle-btn {
+	position: fixed;
+	top: 0;
+	right: 16px;
+	z-index: 2000;
+	height: 45px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 14px;
+	color: #e2e8f0 !important;
+	text-decoration: none !important;
+	font-size: 13px;
+	font-weight: 500;
+	background: transparent;
+}
+
+body.skin-3 a.modern-theme-toggle-btn:hover {
+	color: #fff !important;
+	background: #1e293b;
+}
+
+body.skin-3 .ace-nav > li.modern-theme-toggle > a {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	height: 45px;
+	padding: 0 12px;
+	color: var(--mt-nav-text) !important;
+	text-decoration: none !important;
+}
+
+body.skin-3 .navbar .navbar-header {
+	padding-left: 12px;
+}
+
+body.skin-3 .navbar .navbar-toggle {
+	background-color: var(--mt-slate-700) !important;
+	border-radius: var(--mt-radius-sm);
+}
+
+body.skin-3 .ace-nav > li > a,
+body.skin-3 .navbar .nav > li > a {
+	color: var(--mt-nav-text) !important;
+}
+
+body.skin-3 .ace-nav > li.modern-theme-toggle > a,
+body.skin-3 .ace-nav > li.modern-theme-toggle > a .ace-icon {
+	color: var(--mt-nav-text) !important;
+}
+
+body.skin-3 .ace-nav > li > a:hover,
+body.skin-3 .navbar .nav > li > a:hover,
+body.skin-3 .ace-nav > li.open > a,
+body.skin-3 .ace-nav > li.modern-theme-toggle > a:hover {
+	background-color: var(--mt-nav-hover) !important;
+	color: #fff !important;
+}
+
+body.skin-3 .nav-recent {
+	color: var(--mt-slate-400);
+}
+
+body.skin-3 .ace-nav .nav-avatar-40 {
+	border-color: var(--mt-slate-600);
+	border-radius: 9999px !important;
+}
+
+/* Sidebar */
+body.skin-3 .sidebar {
+	background-color: var(--mt-nav-bg) !important;
+	border: none !important;
+}
+
+body.skin-3 .nav-list > li,
+body.skin-3 .nav-list > li:hover,
+body.skin-3 .nav-list > li.open,
+body.skin-3 .nav-list > li.active {
+	background-color: transparent !important;
+	border: none !important;
+}
+
+body.skin-3 .nav-list > li > a {
+	color: var(--mt-nav-text) !important;
+	margin: 4px 8px;
+	border-radius: 8px;
+	background: transparent !important;
+}
+
+body.skin-3 .nav-list > li:hover > a,
+body.skin-3 .nav-list > li.open > a {
+	background-color: var(--mt-nav-hover) !important;
+	color: #fff !important;
+}
+
+body.skin-3 .nav-list > li.active > a,
+body.skin-3 .nav-list > li.active:hover > a {
+	background-color: var(--mt-nav-active) !important;
+	color: #fff !important;
+}
+
+body.skin-3 .nav-list > li > a > .menu-icon,
+body.skin-3 .nav-list > li > a > .arrow {
+	color: inherit !important;
+}
+
+body.skin-3 .nav-list > li .submenu {
+	background-color: var(--mt-nav-bg) !important;
+	border: none;
+}
+
+body.skin-3 .nav-list > li .submenu > li > a {
+	color: var(--mt-slate-400) !important;
+}
+
+body.skin-3 .nav-list > li .submenu > li > a:hover,
+body.skin-3 .nav-list > li .submenu > li.active > a {
+	color: #fff !important;
+	background-color: var(--mt-nav-hover) !important;
+}
+
+body.skin-3 .sidebar-toggle {
+	background-color: var(--mt-nav-hover) !important;
+	border-color: var(--mt-nav-hover) !important;
+	color: var(--mt-nav-text) !important;
+}
+
+/* Cards: white surface, dark titles — no lavender headers */
+body.skin-3 .widget-box {
+	border: 1px solid var(--mt-slate-200) !important;
+	border-radius: var(--mt-radius);
+	box-shadow: var(--mt-shadow);
+	background: var(--mt-surface);
+	overflow: hidden;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .widget-header,
+body.skin-3 .widget-box[class*="widget-color-"] > .widget-header {
+	background: var(--mt-surface) !important;
+	background-image: none !important;
+	filter: none !important;
+	border-bottom: 1px solid var(--mt-slate-200) !important;
+	border-color: var(--mt-slate-200) !important;
+	color: var(--mt-text) !important;
+	padding: 10px 14px;
+}
+
+body.skin-3 .widget-header .widget-title,
+body.skin-3 .widget-box[class*="widget-color-"] > .widget-header .widget-title {
+	color: var(--mt-text) !important;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+body.skin-3 .widget-body,
+body.skin-3 .widget-main {
+	background: var(--mt-surface) !important;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .widget-header .ace-icon,
+body.skin-3 .widget-header .widget-toolbar a,
+body.skin-3 .widget-header .widget-toolbar > [data-action],
+body.skin-3 .widget-box[class*="widget-color-"] > .widget-header .ace-icon,
+body.skin-3 .widget-box[class*="widget-color-"] > .widget-header .widget-toolbar a,
+body.skin-3 .widget-box[class*="widget-color-"] > .widget-header .widget-toolbar > [data-action],
+body.skin-3 .widget-box[class*="widget-color-"] > .widget-header .widget-toolbar > .widget-menu > [data-action] {
+	color: var(--mt-text-muted) !important;
+}
+
+body.skin-3 .widget-color-blue2,
+body.skin-3 .widget-color-blue,
+body.skin-3 .widget-color-green,
+body.skin-3 .widget-color-red,
+body.skin-3 .widget-color-orange,
+body.skin-3 .widget-color-purple,
+body.skin-3 .widget-color-dark,
+body.skin-3 .widget-color-grey {
+	border-color: var(--mt-slate-200) !important;
+}
+
+/* Tables */
+body.skin-3 .table,
+body.skin-3 #buglist,
+body.skin-3 .table > thead > tr,
+body.skin-3 .table > tbody > tr,
+body.skin-3 .table > tfoot > tr,
+body.skin-3 #buglist tr {
+	background-color: var(--mt-surface) !important;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .table > thead > tr > th,
+body.skin-3 #buglist th,
+body.skin-3 table.table-bordered thead th {
+	background-color: var(--mt-slate-50) !important;
+	color: var(--mt-text) !important;
+	font-weight: 600;
+	border-color: var(--mt-slate-200) !important;
+}
+
+body.skin-3 .table > tbody > tr > td,
+body.skin-3 .table > tbody > tr > th,
+body.skin-3 #buglist td {
+	background-color: var(--mt-surface) !important;
+	border-color: var(--mt-slate-200) !important;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .table-striped > tbody > tr:nth-of-type(odd),
+body.skin-3 .table-striped > tbody > tr:nth-of-type(odd) > td {
+	background-color: var(--mt-slate-50) !important;
+}
+
+body.skin-3 .table-hover > tbody > tr:hover,
+body.skin-3 .table-hover > tbody > tr:hover > td,
+body.skin-3 #buglist tbody tr:hover,
+body.skin-3 #buglist tbody tr:hover td {
+	background-color: var(--mt-slate-50) !important;
+}
+
+body.skin-3 td.category,
+body.skin-3 th.category,
+body.skin-3 td.category label,
+body.skin-3 th.category label {
+	background-color: var(--mt-slate-50) !important;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 tr.spacer {
+	background-color: var(--mt-surface) !important;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .widget-toolbox {
+	background-color: var(--mt-surface) !important;
+	border-color: var(--mt-slate-200) !important;
+	color: var(--mt-text) !important;
+}
+
+/* Solid primary only when not Ace's "white" secondary style */
+body.skin-3 .btn-primary:not(.btn-white),
+body.login-layout .btn-primary:not(.btn-white) {
+	background-color: var(--mt-blue-600) !important;
+	border-color: var(--mt-blue-600) !important;
+	color: #fff !important;
+	border-radius: var(--mt-radius-sm) !important;
+	font-weight: 500;
+	box-shadow: none;
+}
+
+body.skin-3 .btn-primary:not(.btn-white):hover,
+body.skin-3 .btn-primary:not(.btn-white):focus,
+body.login-layout .btn-primary:not(.btn-white):hover {
+	background-color: var(--mt-blue-700) !important;
+	border-color: var(--mt-blue-700) !important;
+	color: #fff !important;
+}
+
+/* "Ver Tarefas" and other Ace btn-white primaries: outline */
+body.skin-3 .btn-primary.btn-white,
+body.skin-3 .btn-white,
+body.skin-3 .btn-default,
+body.login-layout .btn-primary.btn-white {
+	background-color: var(--mt-surface) !important;
+	border: 1px solid var(--mt-slate-300) !important;
+	color: var(--mt-text) !important;
+	border-radius: var(--mt-radius-sm) !important;
+	box-shadow: none !important;
+	font-weight: 500;
+}
+
+body.skin-3 .btn-primary.btn-white:hover,
+body.skin-3 .btn-white:hover,
+body.skin-3 .btn-default:hover,
+body.login-layout .btn-primary.btn-white:hover {
+	background-color: var(--mt-slate-50) !important;
+	border-color: var(--mt-slate-400) !important;
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .widget-toolbar .btn-primary.btn-white {
+	padding: 2px 10px;
+	font-size: 12px;
+}
+
+body.skin-3 .btn-success {
+	background-color: #059669 !important;
+	border-color: #059669 !important;
+	border-radius: var(--mt-radius-sm) !important;
+	color: #fff !important;
+}
+
+body.skin-3 .btn-danger {
+	background-color: #dc2626 !important;
+	border-color: #dc2626 !important;
+	border-radius: var(--mt-radius-sm) !important;
+	color: #fff !important;
+}
+
+body.skin-3 .btn-info {
+	background-color: var(--mt-blue-600) !important;
+	border-color: var(--mt-blue-600) !important;
+	border-radius: var(--mt-radius-sm) !important;
+	color: #fff !important;
+}
+
+/* Forms */
+body.skin-3 input[type="text"],
+body.skin-3 input[type="password"],
+body.skin-3 input[type="email"],
+body.skin-3 input[type="number"],
+body.skin-3 input[type="search"],
+body.skin-3 textarea,
+body.skin-3 select,
+body.skin-3 .form-control,
+body.login-layout input[type="text"],
+body.login-layout input[type="password"],
+body.login-layout .form-control {
+	border: 1px solid var(--mt-slate-300) !important;
+	border-radius: var(--mt-radius-sm) !important;
+	box-shadow: none !important;
+	color: var(--mt-text) !important;
+	background-color: var(--mt-surface) !important;
+}
+
+body.skin-3 input:focus,
+body.skin-3 textarea:focus,
+body.skin-3 select:focus,
+body.skin-3 .form-control:focus,
+body.login-layout input:focus {
+	border-color: var(--mt-blue-500) !important;
+	box-shadow: 0 0 0 3px rgb(37 99 235 / 0.2) !important;
+	outline: none;
+}
+
+/* Tabs, badges, dropdowns */
+body.skin-3 .nav-tabs {
+	border-bottom-color: var(--mt-slate-200);
+}
+
+body.skin-3 .nav-tabs > li > a {
+	border-radius: var(--mt-radius-sm) var(--mt-radius-sm) 0 0;
+	color: var(--mt-text-muted);
+}
+
+body.skin-3 .nav-tabs > li.active > a,
+body.skin-3 .nav-tabs > li.active > a:hover,
+body.skin-3 .nav-tabs > li.active > a:focus {
+	border-color: var(--mt-slate-200);
+	background-color: var(--mt-surface);
+	color: var(--mt-text) !important;
+	font-weight: 600;
+}
+
+body.skin-3 .label,
+body.skin-3 .badge {
+	border-radius: 9999px;
+	font-weight: 500;
+}
+
+body.skin-3 .dropdown-menu {
+	background-color: var(--mt-surface);
+	border: 1px solid var(--mt-slate-200);
+	border-radius: var(--mt-radius-sm);
+	box-shadow: var(--mt-shadow-md);
+	padding: 6px 0;
+}
+
+body.skin-3 .dropdown-menu > li > a {
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .dropdown-menu > li > a:hover {
+	background-color: var(--mt-slate-50);
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .pagination > li > a,
+body.skin-3 .pagination > li > span {
+	border-radius: var(--mt-radius-sm);
+	color: var(--mt-text) !important;
+	border-color: var(--mt-slate-200);
+	background-color: var(--mt-surface);
+}
+
+body.skin-3 .pagination > .active > a,
+body.skin-3 .pagination > .active > span {
+	background-color: var(--mt-blue-600) !important;
+	border-color: var(--mt-blue-600) !important;
+	color: #fff !important;
+}
+
+body.skin-3 .breadcrumb {
+	background: transparent;
+	padding-left: 0;
+	color: var(--mt-text-muted);
+}
+
+body.skin-3 .breadcrumb a {
+	color: var(--mt-link) !important;
+}
+
+body.skin-3 .alert {
+	border-radius: var(--mt-radius-sm);
+	border-width: 1px;
+}
+
+body.skin-3 .footer {
+	background: transparent;
+	color: var(--mt-text-muted);
+	border-top: 1px solid var(--mt-slate-200);
+}
+
+body.skin-3 .page-content a,
+body.skin-3 .widget-body a,
+body.skin-3 .widget-main a {
+	color: var(--mt-link) !important;
+}
+
+body.skin-3 .page-content a:hover,
+body.skin-3 .widget-body a:hover {
+	color: var(--mt-link-hover) !important;
+}
+
+body.skin-3 .bugnote-note {
+	background-color: var(--mt-slate-50) !important;
+	border-radius: var(--mt-radius-sm);
+	color: var(--mt-text) !important;
+}
+
+body.skin-3 .bugnote-private {
+	background-color: #fefce8 !important;
+	color: var(--mt-text) !important;
+}
+
+html.modern-theme-dark body.skin-3 .bugnote-private {
+	background-color: #422006 !important;
+}
+
+/* Login */
+body.login-layout,
+body.login-layout.light-login {
+	background: var(--mt-bg) !important;
+	color: var(--mt-text);
+}
+
+body.login-layout .main-container,
+body.login-layout .main-content {
+	background: transparent;
+}
+
+body.login-layout .login-container {
+	padding-top: 48px;
+}
+
+body.login-layout .widget-box,
+body.login-layout .login-box,
+body.login-layout .position-relative {
+	border-radius: var(--mt-radius);
+}
+
+body.login-layout .widget-box {
+	border: 1px solid var(--mt-slate-200) !important;
+	box-shadow: var(--mt-shadow-md);
+	background: var(--mt-surface);
+}
+
+body.login-layout .widget-main {
+	padding: 24px 28px 28px;
+	color: var(--mt-text) !important;
+}
+
+body.login-layout .widget-box[class*="widget-color-"] > .widget-header {
+	color: var(--mt-text) !important;
+	background: var(--mt-surface) !important;
+}
+
+body.login-layout h4,
+body.login-layout .header,
+body.login-layout label {
+	font-weight: 600;
+	color: var(--mt-text) !important;
+}
+
+body.login-layout .toolbar,
+body.login-layout .toolbar a {
+	color: var(--mt-text-muted) !important;
+}
+
+body.login-layout a {
+	color: var(--mt-link) !important;
+}
+
+body.skin-3 .tt-suggestion.tt-selectable:hover,
+body.skin-3 .tt-suggestion.tt-cursor {
+	background-color: var(--mt-blue-600) !important;
+	color: #fff !important;
+}
+
+/* Force Ace white surfaces to Windows dark chrome */
+html.modern-theme-dark body.skin-3 .page-content,
+html.modern-theme-dark body.skin-3 .main-content,
+html.modern-theme-dark body.skin-3 .main-container,
+html.modern-theme-dark body.skin-3 .widget-box,
+html.modern-theme-dark body.skin-3 .widget-body,
+html.modern-theme-dark body.skin-3 .widget-main,
+html.modern-theme-dark body.skin-3 .table,
+html.modern-theme-dark body.skin-3 #buglist,
+html.modern-theme-dark body.skin-3 .table > tbody > tr > td,
+html.modern-theme-dark body.skin-3 #buglist td,
+html.modern-theme-dark body.skin-3 .timeline-item,
+html.modern-theme-dark body.skin-3 .timeline-item .widget-box,
+html.modern-theme-dark body.skin-3 .timeline-item .widget-main,
+html.modern-theme-dark body.skin-3 .breadcrumbs,
+html.modern-theme-dark body.skin-3 .footer,
+html.modern-theme-dark body.skin-3 .infobox,
+html.modern-theme-dark body.login-layout .widget-box,
+html.modern-theme-dark body.login-layout .widget-main {
+	background-color: var(--mt-surface) !important;
+	background-image: none !important;
+	color: var(--mt-text) !important;
+}
+
+html.modern-theme-dark body.skin-3 {
+	background-color: var(--mt-bg) !important;
+}
+
+html.modern-theme-dark body.skin-3 .page-content {
+	background-color: var(--mt-bg) !important;
+}
+
+html.modern-theme-dark body.skin-3 .btn-primary:not(.btn-white),
+html.modern-theme-dark body.login-layout .btn-primary:not(.btn-white) {
+	background-color: #3c3c3c !important;
+	border-color: #3c3c3c !important;
+	color: #fff !important;
+}
+
+html.modern-theme-dark body.skin-3 .btn-primary:not(.btn-white):hover,
+html.modern-theme-dark body.login-layout .btn-primary:not(.btn-white):hover {
+	background-color: #4a4a4a !important;
+	border-color: #4a4a4a !important;
+}
+
+html.modern-theme-dark body.skin-3 .btn-info {
+	background-color: #3c3c3c !important;
+	border-color: #3c3c3c !important;
+}
+
+html.modern-theme-dark body.skin-3 .label-info,
+html.modern-theme-dark body.skin-3 .badge-info,
+html.modern-theme-dark body.skin-3 .bg-primary,
+html.modern-theme-dark body.skin-3 .infobox-blue,
+html.modern-theme-dark body.skin-3 .infobox-blue2 {
+	background-color: #3c3c3c !important;
+	border-color: #3c3c3c !important;
+	color: #fff !important;
+}
+
+html.modern-theme-dark body.skin-3 .pagination > .active > a,
+html.modern-theme-dark body.skin-3 .pagination > .active > span {
+	background-color: #3c3c3c !important;
+	border-color: #3c3c3c !important;
+}
+
+html.modern-theme-dark body.skin-3 .dropzone {
+	background: #323232 !important;
+	border-color: #3f3f3f !important;
+}
+
+html.modern-theme-dark body.skin-3 table,
+html.modern-theme-dark body.skin-3 table tr,
+html.modern-theme-dark body.skin-3 table th,
+html.modern-theme-dark body.skin-3 table td,
+html.modern-theme-dark body.skin-3 .widget-toolbox,
+html.modern-theme-dark body.skin-3 .widget-toolbox:first-child,
+html.modern-theme-dark body.skin-3 .widget-toolbox:last-child,
+html.modern-theme-dark body.skin-3 .table-responsive,
+html.modern-theme-dark body.skin-3 .btn-toolbar,
+html.modern-theme-dark body.skin-3 td.category,
+html.modern-theme-dark body.skin-3 th.category,
+html.modern-theme-dark body.skin-3 td.category label,
+html.modern-theme-dark body.skin-3 th.category label,
+html.modern-theme-dark body.skin-3 tr.spacer,
+html.modern-theme-dark body.skin-3 .well,
+html.modern-theme-dark body.skin-3 .panel,
+html.modern-theme-dark body.skin-3 .panel-body,
+html.modern-theme-dark body.skin-3 .tab-content,
+html.modern-theme-dark body.skin-3 .nav-tabs > li.active > a,
+html.modern-theme-dark body.skin-3 .chosen-container-single .chosen-single,
+html.modern-theme-dark body.skin-3 .bootstrap-select > .dropdown-toggle {
+	background-color: var(--mt-surface) !important;
+	background-image: none !important;
+	color: var(--mt-text) !important;
+	border-color: var(--mt-slate-200) !important;
+}
+
+html.modern-theme-dark body.skin-3 .table-striped > tbody > tr:nth-of-type(odd),
+html.modern-theme-dark body.skin-3 .table-striped > tbody > tr:nth-of-type(odd) > td {
+	background-color: #323232 !important;
+}
+
+html.modern-theme-dark body.skin-3 input,
+html.modern-theme-dark body.skin-3 textarea,
+html.modern-theme-dark body.skin-3 select,
+html.modern-theme-dark body.skin-3 .form-control {
+	background-color: #1c1c1c !important;
+	color: #fff !important;
+	border-color: #3f3f3f !important;
+}
+
+html.modern-theme-dark body.skin-3 .small-caption {
+	border-color: #3f3f3f !important;
+}
