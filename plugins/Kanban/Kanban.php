@@ -19,6 +19,8 @@
  */
 class KanbanPlugin extends MantisPlugin {
 	const FORM_MOVE = 'plugin_kanban_move';
+	const FORM_ISSUE = 'plugin_kanban_issue';
+	const FORM_ISSUE_DELETE = 'plugin_kanban_issue_delete';
 
 	/**
 	 * Statuses hidden unless the board has at least one card in them
@@ -40,7 +42,7 @@ class KanbanPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = '';
 
-		$this->version = '1.1.6';
+		$this->version = '1.2.1';
 		$this->requires = array(
 			'MantisCore' => '2.25.0',
 		);
