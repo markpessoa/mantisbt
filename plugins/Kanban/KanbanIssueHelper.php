@@ -10,7 +10,7 @@ use Mantis\Exceptions\ClientException;
  */
 class KanbanIssueHelper {
 	/**
-	 * Priority badge map (P1–P3).
+	 * Priority badge map (P1–P5).
 	 *
 	 * @return array<int, array{label: string, class: string}>
 	 */
@@ -22,7 +22,7 @@ class KanbanIssueHelper {
 		$t_badges = array();
 		$t_rank = 1;
 		foreach( $t_priority_values as $t_priority_id ) {
-			if( (int)$t_priority_id <= 10 || $t_rank > 3 ) {
+			if( (int)$t_priority_id <= 10 || $t_rank > 5 ) {
 				continue;
 			}
 			$t_badges[(int)$t_priority_id] = array(

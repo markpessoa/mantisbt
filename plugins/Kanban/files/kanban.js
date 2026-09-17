@@ -92,30 +92,11 @@
 		col.textContent = String(Math.max(0, n + delta));
 	}
 
-	function laneSection(laneKey) {
-		if (!laneKey) {
-			return null;
-		}
-		return board.querySelector('.kanban-lane[data-lane="' + laneKey + '"]');
-	}
-
 	function syncCardLaneMeta(card, laneKey) {
 		if (!card || !laneKey) {
 			return;
 		}
 		card.setAttribute('data-lane', laneKey);
-		var dateEl = card.querySelector('.kanban-card-date');
-		if (!dateEl) {
-			return;
-		}
-		var lane = laneSection(laneKey);
-		if (!lane) {
-			return;
-		}
-		var laneDate = lane.querySelector('.kanban-lane-date');
-		if (laneDate && laneDate.textContent) {
-			dateEl.textContent = laneDate.textContent;
-		}
 	}
 
 	function updateLaneCount(laneKey, delta) {

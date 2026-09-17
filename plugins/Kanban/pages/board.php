@@ -111,27 +111,9 @@ if( $t_status_count < 1 ) {
 	$t_status_count = 1;
 }
 
-$t_priority_enum = config_get( 'priority_enum_string' );
-$t_priority_values = array_keys( MantisEnum::getAssocArrayIndexedByValues( $t_priority_enum ) );
-rsort( $t_priority_values, SORT_NUMERIC );
-$t_priority_badges = array();
-$t_priority_rank = 1;
-foreach( $t_priority_values as $t_priority_id ) {
-	if( (int)$t_priority_id <= 10 || $t_priority_rank > 3 ) {
-		continue;
-	}
-	$t_priority_badges[$t_priority_id] = array(
-		'label' => 'P' . $t_priority_rank,
-		'class' => 'kanban-priority-p' . $t_priority_rank,
-	);
-	$t_priority_rank++;
-}
+$t_priority_badges = KanbanIssueHelper::priority_badges();
 
-$t_version_meta = array();
 $t_version_rows = KanbanIssueHelper::sorted_version_rows( $t_project_id );
-foreach( $t_version_rows as $t_version_row ) {
-	$t_version_meta[$t_version_row['version']] = $t_version_row;
-}
 
 $t_lanes = array();
 $t_lane_keys_added = array();
@@ -209,7 +191,6 @@ if( $t_none_count > 0 ) {
 }
 
 $t_max_per_cell = 200;
-$t_short_date = config_get( 'short_date_format' );
 $t_project_name = project_get_name( $t_project_id );
 $t_total_cards = count( $t_rows );
 
@@ -289,10 +270,6 @@ foreach( $t_lanes as $t_lane ) {
 		$t_issues = isset( $t_lane['bugs'][(int)$t_status_id] ) ? $t_lane['bugs'][(int)$t_status_id] : array();
 		$t_shown = array_slice( $t_issues, 0, $t_max_per_cell );
 		$t_hidden = count( $t_issues ) - count( $t_shown );
-		$t_version_date = 0;
-		if( $t_lane_key !== '__none__' && isset( $t_version_meta[$t_lane_key] ) ) {
-			$t_version_date = (int)$t_version_meta[$t_lane_key]['date_order'];
-		}
 		?>
 					<div class="kanban-cell" data-status="<?php echo (int)$t_status_id; ?>" data-lane="<?php echo string_attribute( $t_lane_key ); ?>" data-sortable="1">
 <?php
@@ -313,12 +290,7 @@ foreach( $t_lanes as $t_lane ) {
 					$t_badge_class = $t_priority_badges[$t_priority]['class'];
 				}
 				$t_description = trim( preg_replace( '/\s+/', ' ', strip_tags( $t_bug->description ) ) );
-				$t_date = '';
-				if( !date_is_null( $t_bug->due_date ) ) {
-					$t_date = date( $t_short_date, $t_bug->due_date );
-				} elseif( $t_version_date > 0 ) {
-					$t_date = date( 'd/m/Y', $t_version_date );
-				}
+				$t_short_id = '#' . $t_bug_id;
 				?>
 						<article class="kanban-card<?php echo $t_can_drag ? ' kanban-card-draggable' : ' kanban-card-clickable'; ?>"
 							data-bug-id="<?php echo $t_bug_id; ?>"
@@ -343,9 +315,9 @@ foreach( $t_lanes as $t_lane ) {
 								<?php if( $t_description !== '' ) { ?>
 								<span class="kanban-card-description" title="<?php echo string_attribute( $t_description ); ?>"><?php echo string_display_line( $t_description ); ?></span>
 								<?php } ?>
-								<?php if( $t_date !== '' ) { ?>
-								<span class="kanban-card-date"><?php echo string_display_line( $t_date ); ?></span>
-								<?php } ?>
+							</div>
+							<div class="kanban-card-footer">
+								<span class="kanban-card-id"><?php echo string_display_line( $t_short_id ); ?></span>
 							</div>
 						</article>
 <?php
