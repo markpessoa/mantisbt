@@ -20,6 +20,7 @@ plugins/*
 !plugins/Gravatar
 !plugins/ModernTheme
 !plugins/ModernThemeDarkOrangeUI
+!plugins/Kanban
 
 # IDE/Editor temporary files
 *~
