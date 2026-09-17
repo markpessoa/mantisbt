@@ -42,7 +42,7 @@ class KanbanPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = '';
 
-		$this->version = '1.3.1';
+		$this->version = '1.3.4';
 		$this->requires = array(
 			'MantisCore' => '2.25.0',
 		);
@@ -61,8 +61,21 @@ class KanbanPlugin extends MantisPlugin {
 		return array(
 			'EVENT_MENU_MAIN_FILTER' => 'menu_filter',
 			'EVENT_LAYOUT_RESOURCES' => 'resources',
+			'EVENT_LAYOUT_BODY_BEGIN' => 'body_styles',
 			'EVENT_LAYOUT_BODY_END' => 'scripts',
 		);
+	}
+
+	/**
+	 * Allow plugin_file.php to serve Inter woff2 with the correct MIME type.
+	 *
+	 * @return void
+	 */
+	function init() {
+		global $g_plugin_mime_types;
+		if( is_array( $g_plugin_mime_types ) ) {
+			$g_plugin_mime_types['woff2'] = 'font/woff2';
+		}
 	}
 
 	/**
@@ -117,6 +130,63 @@ class KanbanPlugin extends MantisPlugin {
 
 		$t_ver = urlencode( $this->version );
 		echo '<link rel="stylesheet" href="' . plugin_file( 'kanban.css' ) . '&amp;v=' . $t_ver . '" />' . "\n";
+	}
+
+	/**
+	 * Re-apply DevBoard look after Ace/ModernTheme CSS (head order varies by plugin).
+	 *
+	 * @return void
+	 */
+	function body_styles() {
+		if( !$this->is_board_page() ) {
+			return;
+		}
+
+		$this->echo_devboard_css();
+	}
+
+	/**
+	 * Inter + near-black board. Inline so plugin_file.php cache cannot hide it.
+	 *
+	 * @return void
+	 */
+	function echo_devboard_css() {
+		$t_ver = urlencode( $this->version );
+		$t_font_400 = htmlspecialchars( plugin_file( 'fonts/inter-latin-400.woff2' ) . '&v=' . $t_ver, ENT_QUOTES, 'UTF-8' );
+		$t_font_600 = htmlspecialchars( plugin_file( 'fonts/inter-latin-600.woff2' ) . '&v=' . $t_ver, ENT_QUOTES, 'UTF-8' );
+		$t_font_700 = htmlspecialchars( plugin_file( 'fonts/inter-latin-700.woff2' ) . '&v=' . $t_ver, ENT_QUOTES, 'UTF-8' );
+
+		echo '<style id="kanban-devboard-inline">';
+		echo '@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url("' . $t_font_400 . '") format("woff2")}';
+		echo '@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url("' . $t_font_600 . '") format("woff2")}';
+		echo '@font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:swap;src:url("' . $t_font_700 . '") format("woff2")}';
+		echo 'html:has(body#kanban-board-page),body#kanban-board-page,body#kanban-board-page.skin-3,';
+		echo 'body#kanban-board-page .main-container,body#kanban-board-page .main-content,';
+		echo 'body#kanban-board-page .page-content,body#kanban-board-page #navbar,';
+		echo 'body#kanban-board-page .navbar,body#kanban-board-page .navbar.navbar-collapse,';
+		echo 'body#kanban-board-page .kanban-shell,body#kanban-board-page .kanban-board,';
+		echo 'body#kanban-board-page .kanban-toolbar,body#kanban-board-page .kanban-status-row,';
+		echo 'body#kanban-board-page .kanban-lanes{';
+		echo 'background:#0a0a0a!important;background-color:#0a0a0a!important;';
+		echo '--mt-bg:#0a0a0a;--mt-nav-bg:#0a0a0a;--mt-surface:#141414;--mt-text:#f5f5f5;--mt-text-muted:#a3a3a3}';
+		echo 'body#kanban-board-page,body#kanban-board-page .kanban-shell,';
+		echo 'body#kanban-board-page .kanban-shell button,body#kanban-board-page .kanban-card,';
+		echo 'body#kanban-board-page .kanban-card-summary,body#kanban-board-page .kanban-card-description,';
+		echo 'body#kanban-board-page .kanban-card-id,body#kanban-board-page .kanban-lane-header,';
+		echo 'body#kanban-board-page .kanban-status-col,body#kanban-board-page .kanban-toolbar,';
+		echo 'body#kanban-board-page .kanban-btn,body#kanban-board-page .kanban-dialog{';
+		echo 'font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}';
+		echo 'body#kanban-board-page .fa,body#kanban-board-page .ace-icon{font-family:FontAwesome!important}';
+		echo 'body#kanban-board-page .kanban-card{background:#141414!important;border:1px solid rgba(255,255,255,.08)!important;padding:10px 12px!important;gap:4px!important;border-radius:4px!important}';
+		echo 'body#kanban-board-page .kanban-card-summary{font-size:14px!important;font-weight:600!important;line-height:1.3!important;color:#f5f5f5!important}';
+		echo 'body#kanban-board-page .kanban-card-description{font-size:13px!important;font-weight:400!important;line-height:1.4!important;color:#a3a3a3!important;opacity:1!important}';
+		echo 'body#kanban-board-page .kanban-card-id{font-size:12px!important;font-weight:400!important;color:#a3a3a3!important;opacity:1!important;font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}';
+		echo 'body#kanban-board-page .kanban-card-footer{margin-top:2px!important;padding-top:4px!important;border-top-color:rgba(255,255,255,.08)!important}';
+		echo 'body#kanban-board-page .kanban-card-priority{font-size:11px!important;font-weight:700!important}';
+		echo 'body#kanban-board-page .kanban-cell{padding:8px!important;gap:8px!important}';
+		echo 'body#kanban-board-page .kanban-lane-header{background:transparent!important;color:#4ade80!important;font-size:13px!important;font-weight:600!important}';
+		echo 'body#kanban-board-page .kanban-status-col,body#kanban-board-page .kanban-toolbar{font-size:13px!important;color:#f5f5f5!important}';
+		echo '</style>' . "\n";
 	}
 
 	/**
