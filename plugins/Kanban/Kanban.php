@@ -40,7 +40,7 @@ class KanbanPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = '';
 
-		$this->version = '1.1.5';
+		$this->version = '1.1.6';
 		$this->requires = array(
 			'MantisCore' => '2.25.0',
 		);
