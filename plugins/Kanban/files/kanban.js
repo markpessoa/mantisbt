@@ -33,9 +33,9 @@
 	var fieldSummary = document.getElementById('kanban-field-summary');
 	var fieldDescription = document.getElementById('kanban-field-description');
 	var fieldReporter = document.getElementById('kanban-field-reporter');
-	var fieldDue = document.getElementById('kanban-field-due');
+	var fieldDue = document.getElementById('due_date');
+	var dueDateWrap = document.getElementById('kanban-due-date-wrap');
 	var fieldPriority = document.getElementById('kanban-field-priority');
-	var priorityPicker = document.getElementById('kanban-priority-picker');
 	var fieldStatus = document.getElementById('kanban-field-status');
 	var fieldVersion = document.getElementById('kanban-field-version');
 	var fieldProject = document.getElementById('kanban-field-project');
@@ -45,6 +45,7 @@
 	var btnDelete = document.getElementById('kanban-btn-delete');
 	var btnSaveNew = document.getElementById('kanban-btn-save-new');
 	var btnClose = document.getElementById('kanban-dialog-close');
+	var btnSave = document.getElementById('kanban-btn-save');
 	var newIssueBtn = document.getElementById('kanban-new-issue');
 	var modalState = {
 		bugId: 0,
@@ -52,12 +53,7 @@
 		permissions: {},
 		tagSeparator: ',',
 		labels: {
-			newIssue: dialog ? dialog.getAttribute('data-title-new') || 'New task' : 'New task',
-			cardPrefix: dialog ? dialog.getAttribute('data-title-card') || 'CARD #' : 'CARD #',
-			confirmDelete: dialog ? dialog.getAttribute('data-confirm-delete') || 'Delete this issue?' : 'Delete this issue?',
-			created: dialog ? dialog.getAttribute('data-meta-created') || 'created:' : 'created:',
-			updated: dialog ? dialog.getAttribute('data-meta-updated') || 'updated:' : 'updated:',
-			noVersion: dialog ? dialog.getAttribute('data-no-version') || 'No version' : 'No version'
+			confirmDelete: dialog ? dialog.getAttribute('data-confirm-delete') || '' : ''
 		}
 	};
 
@@ -179,48 +175,75 @@
 		});
 	}
 
-	function buildPriorityPicker(priorities, selectedId) {
-		if (!priorityPicker) {
+	function setDueDateValue(value) {
+		if (!fieldDue) {
 			return;
 		}
-		priorityPicker.innerHTML = '';
-		priorities.forEach(function (p) {
-			var btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = 'kanban-priority-btn ' + p.class;
-			btn.textContent = p.label;
-			btn.setAttribute('data-priority-id', String(p.id));
-			if (String(p.id) === String(selectedId)) {
-				btn.classList.add('is-selected');
+		fieldDue.value = value || '';
+		if (window.jQuery && window.jQuery.fn.datetimepicker) {
+			var $el = window.jQuery(fieldDue);
+			if ($el.data('DateTimePicker')) {
+				if (value) {
+					$el.data('DateTimePicker').date(value);
+				} else {
+					$el.data('DateTimePicker').clear();
+				}
 			}
-			btn.addEventListener('click', function () {
-				priorityPicker.querySelectorAll('.kanban-priority-btn').forEach(function (el) {
-					el.classList.remove('is-selected');
-				});
-				btn.classList.add('is-selected');
-				fieldPriority.value = String(p.id);
-			});
-			priorityPicker.appendChild(btn);
-		});
-		if (fieldPriority) {
-			fieldPriority.value = String(selectedId);
 		}
+	}
+
+	function ensureDueDatePicker() {
+		if (!fieldDue || !window.jQuery || !window.jQuery.fn.datetimepicker) {
+			return;
+		}
+		var $el = window.jQuery(fieldDue);
+		if ($el.data('DateTimePicker')) {
+			return;
+		}
+		var $parent = $el.parent();
+		if ($parent.css('position') === 'static') {
+			$parent.css('position', 'relative');
+		}
+		$el.datetimepicker({
+			locale: $el.data('picker-locale'),
+			format: $el.data('picker-format'),
+			useCurrent: false,
+			showTodayButton: true,
+			icons: {
+				time: 'fa fa-clock-o',
+				date: 'fa fa-calendar',
+				up: 'fa fa-chevron-up',
+				down: 'fa fa-chevron-down',
+				previous: 'fa fa-chevron-left',
+				next: 'fa fa-chevron-right',
+				today: 'fa fa-calendar-times-o',
+				clear: 'fa fa-trash',
+				close: 'fa fa-times'
+			}
+		});
+		$el.next('.fa-calendar').on('click', function () {
+			$el.focus();
+		});
 	}
 
 	function applyPermissions(perms) {
 		modalState.permissions = perms || {};
 		var canEdit = !!perms.can_edit;
+		var showDue = !!perms.can_show_due_date;
+		if (dueDateWrap) {
+			dueDateWrap.hidden = !showDue;
+		}
 		fieldSummary.disabled = !canEdit;
 		fieldDescription.disabled = !canEdit;
 		fieldReporter.disabled = !canEdit || !perms.can_change_reporter;
-		fieldDue.disabled = !canEdit || !perms.can_change_due_date;
+		if (fieldDue) {
+			fieldDue.disabled = !canEdit || !perms.can_change_due_date;
+		}
 		fieldStatus.disabled = !canEdit || !perms.can_change_status;
 		fieldVersion.disabled = !canEdit || !perms.can_change_version;
 		fieldProject.disabled = !canEdit || !perms.can_change_project;
 		fieldTags.disabled = !canEdit || !perms.can_change_tags;
-		priorityPicker.querySelectorAll('button').forEach(function (btn) {
-			btn.disabled = !canEdit;
-		});
+		fieldPriority.disabled = !canEdit;
 		btnSaveNew.hidden = !canEdit;
 		document.getElementById('kanban-btn-save').disabled = !canEdit;
 		btnArchive.hidden = !perms.can_archive;
@@ -230,36 +253,56 @@
 	function populateForm(data) {
 		var issue = data.issue;
 		var opts = data.options;
+		var ui = data.ui || {};
 		modalState.mode = data.mode;
 		modalState.bugId = issue.id || 0;
 		modalState.tagSeparator = opts.tag_separator || ',';
 
+		if (dialogTitle && ui.title) {
+			dialogTitle.textContent = ui.title;
+		}
 		if (data.mode === 'edit') {
-			dialogTitle.textContent = modalState.labels.cardPrefix + issue.id;
 			dialogMeta.hidden = false;
-			metaCreated.textContent = modalState.labels.created + ' ' + (issue.date_submitted || '');
-			metaUpdated.textContent = modalState.labels.updated + ' ' + (issue.last_updated || '');
+			metaCreated.textContent = ui.meta_created || '';
+			metaUpdated.textContent = ui.meta_updated || '';
 		} else {
-			dialogTitle.textContent = modalState.labels.newIssue;
 			dialogMeta.hidden = true;
+		}
+		if (btnSave) {
+			btnSave.textContent = data.mode === 'create' ? (ui.save_create || btnSave.textContent) : (ui.save_update || btnSave.textContent);
+		}
+		if (btnSaveNew && ui.save_new) {
+			btnSaveNew.textContent = ui.save_new;
 		}
 
 		fieldSummary.value = issue.summary || '';
 		fieldDescription.value = issue.description || '';
 		fillSelect(fieldReporter, opts.reporters, 'id', 'name', issue.reporter_id);
-		fieldDue.value = issue.due_date || '';
-		buildPriorityPicker(opts.priorities, issue.priority);
+		setDueDateValue(issue.due_date || '');
+		ensureDueDatePicker();
+		fillSelect(fieldPriority, opts.priorities, 'id', 'label', issue.priority);
 		fillSelect(fieldStatus, opts.statuses, 'id', 'label', issue.status);
 
 		fieldVersion.innerHTML = '';
 		var noneOpt = document.createElement('option');
 		noneOpt.value = '__none__';
-		noneOpt.textContent = modalState.labels.noVersion;
+		noneOpt.textContent = ui.empty_version !== undefined ? ui.empty_version : '\u00a0';
 		if (!issue.target_version) {
 			noneOpt.selected = true;
 		}
 		fieldVersion.appendChild(noneOpt);
-		opts.versions.forEach(function (v) {
+		function versionSortKey(v) {
+			var d = v.date_order || 0;
+			return d === 0 ? Number.MAX_SAFE_INTEGER : d;
+		}
+		var versionOptions = (opts.versions || []).slice().sort(function (a, b) {
+			var byDate = versionSortKey(a) - versionSortKey(b);
+			if (byDate !== 0) {
+				return byDate;
+			}
+			return (a.id || 0) - (b.id || 0);
+		});
+		versionOptions.forEach(function (v) {
 			var option = document.createElement('option');
 			option.value = v.name;
 			option.textContent = v.name;
@@ -272,7 +315,7 @@
 		fillSelect(fieldProject, opts.projects, 'id', 'name', issue.project_id);
 		fieldTags.value = issue.tag_string || '';
 		if (tagsHint) {
-			tagsHint.textContent = modalState.tagSeparator;
+			tagsHint.textContent = opts.tag_hint || '';
 		}
 		applyPermissions(data.permissions);
 		showDialogError('');
@@ -353,12 +396,11 @@
 	}
 
 	function collectFormParams() {
-		return {
+		var params = {
 			bug_id: String(modalState.bugId || 0),
 			summary: fieldSummary.value,
 			description: fieldDescription.value,
 			reporter_id: fieldReporter.value,
-			due_date: fieldDue.value,
 			priority: fieldPriority.value,
 			status: fieldStatus.value,
 			target_version: fieldVersion.value,
@@ -366,6 +408,10 @@
 			tag_string: fieldTags.value,
 			action: 'save'
 		};
+		if (fieldDue && dueDateWrap && !dueDateWrap.hidden) {
+			params.due_date = fieldDue.value;
+		}
+		return params;
 	}
 
 	function reloadBoard() {

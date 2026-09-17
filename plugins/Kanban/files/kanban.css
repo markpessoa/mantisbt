@@ -625,6 +625,16 @@ body.kanban-is-dragging {
 	margin-bottom: 6px;
 }
 
+.kanban-due-date-input {
+	position: relative;
+}
+
+.kanban-due-date-input .datetimepicker {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
 .kanban-field input[type="text"],
 .kanban-field input[type="date"],
 .kanban-field textarea,

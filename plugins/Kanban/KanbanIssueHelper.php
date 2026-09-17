@@ -35,17 +35,26 @@ class KanbanIssueHelper {
 	}
 
 	/**
-	 * Default priority id for P1.
+	 * All priority levels (Mantis enum labels).
 	 *
+	 * @return array<int, string>
+	 */
+	public static function priority_options() {
+		$t_priority_enum = config_get( 'priority_enum_string' );
+		$t_values = MantisEnum::getAssocArrayIndexedByValues( $t_priority_enum );
+		$t_out = array();
+		foreach( $t_values as $t_id => $t_code ) {
+			$t_out[(int)$t_id] = get_enum_element( 'priority', $t_id );
+		}
+		krsort( $t_out, SORT_NUMERIC );
+		return $t_out;
+	}
+
+	/**
 	 * @return int
 	 */
 	public static function default_priority_id() {
-		$t_badges = self::priority_badges();
-		if( empty( $t_badges ) ) {
-			return (int)config_get( 'default_bug_priority' );
-		}
-		$t_keys = array_keys( $t_badges );
-		return (int)$t_keys[0];
+		return (int)config_get( 'default_bug_priority' );
 	}
 
 	/**
@@ -59,22 +68,32 @@ class KanbanIssueHelper {
 	 */
 	public static function status_options( $p_project_id, $p_current_status, $p_issue_status = null ) {
 		$t_auth = access_get_project_level( $p_project_id );
-		$t_list = get_status_option_list( $t_auth, $p_current_status, true, false, $p_project_id );
-
 		$t_closed = (int)config_get( 'bug_closed_status_threshold', null, null, $p_project_id );
 		$t_optional = KanbanPlugin::optional_status_ids();
+		$t_status_enum = config_get( 'status_enum_string', null, null, $p_project_id );
+		$t_all = MantisEnum::getAssocArrayIndexedByValues( $t_status_enum );
 
-		foreach( $t_list as $t_status_id => $t_label ) {
+		$t_list = array();
+		foreach( $t_all as $t_status_id => $t_status_code ) {
 			$t_sid = (int)$t_status_id;
 			if( $t_sid >= $t_closed ) {
-				unset( $t_list[$t_status_id] );
 				continue;
 			}
 			if( in_array( $t_sid, $t_optional, true ) ) {
-				$t_show = ( $p_issue_status !== null && (int)$p_issue_status === $t_sid );
-				if( !$t_show ) {
-					unset( $t_list[$t_status_id] );
+				if( $p_issue_status === null || (int)$p_issue_status !== $t_sid ) {
+					continue;
 				}
+			}
+			if( !access_compare_level( $t_auth, access_get_status_threshold( $t_sid, $p_project_id ) ) ) {
+				continue;
+			}
+			$t_list[$t_sid] = get_enum_element( 'status', $t_sid );
+		}
+
+		$t_current = (int)$p_current_status;
+		if( $t_current > 0 && $t_current < $t_closed && !isset( $t_list[$t_current] ) ) {
+			if( access_compare_level( $t_auth, access_get_status_threshold( $t_current, $p_project_id ) ) ) {
+				$t_list[$t_current] = get_enum_element( 'status', $t_current );
 			}
 		}
 
@@ -83,14 +102,43 @@ class KanbanIssueHelper {
 	}
 
 	/**
+	 * Project versions sorted by date (oldest first), matching the Kanban board.
+	 *
 	 * @param int $p_project_id Project id.
 	 *
-	 * @return array<int, string>
+	 * @return array
+	 */
+	public static function version_row_date_order( array $p_row ) {
+		$t_val = $p_row['date_order'];
+		if( is_numeric( $t_val ) ) {
+			return (int)$t_val;
+		}
+		return (int)date_strtotime( $t_val );
+	}
+
+	public static function sorted_version_rows( $p_project_id ) {
+		$t_rows = version_get_all_rows( $p_project_id, VERSION_ALL, false );
+		usort(
+			$t_rows,
+			function( $p_a, $p_b ) {
+				$t_cmp = self::version_row_date_order( $p_a ) - self::version_row_date_order( $p_b );
+				if( $t_cmp !== 0 ) {
+					return $t_cmp;
+				}
+				return (int)$p_a['id'] - (int)$p_b['id'];
+			}
+		);
+		return $t_rows;
+	}
+
+	/**
+	 * @param int $p_project_id Project id.
+	 *
+	 * @return string[]
 	 */
 	public static function version_options( $p_project_id ) {
 		$t_versions = array();
-		$t_rows = version_get_all_rows( $p_project_id, VERSION_ALL, false );
-		foreach( $t_rows as $t_row ) {
+		foreach( self::sorted_version_rows( $p_project_id ) as $t_row ) {
 			$t_versions[] = $t_row['version'];
 		}
 		return $t_versions;
@@ -129,6 +177,65 @@ class KanbanIssueHelper {
 	 *
 	 * @return int
 	 */
+	/**
+	 * Whether the Kanban board should load the Mantis date picker assets.
+	 *
+	 * @param int $p_project_id Project id.
+	 *
+	 * @return bool
+	 */
+	public static function board_uses_due_date( $p_project_id ) {
+		$t_report_fields = config_get( 'bug_report_page_fields', null, null, $p_project_id );
+		$t_view_fields = config_get( 'bug_view_page_fields', null, null, $p_project_id );
+		return in_array( 'due_date', $t_report_fields, true )
+			|| in_array( 'due_date', $t_view_fields, true );
+	}
+
+	/**
+	 * @param int      $p_project_id Project id.
+	 * @param int|null $p_bug_id     Bug id when editing.
+	 *
+	 * @return bool
+	 */
+	public static function can_show_due_date( $p_project_id, $p_bug_id = null ) {
+		if( $p_bug_id !== null && $p_bug_id > 0 ) {
+			$t_fields = config_get( 'bug_view_page_fields', null, null, $p_project_id );
+			if( !in_array( 'due_date', $t_fields, true ) ) {
+				return false;
+			}
+			return access_has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug_id );
+		}
+		$t_fields = config_get( 'bug_report_page_fields', null, null, $p_project_id );
+		if( !in_array( 'due_date', $t_fields, true ) ) {
+			return false;
+		}
+		return access_has_project_level(
+			config_get( 'due_date_update_threshold' ),
+			$p_project_id,
+			auth_get_current_user_id()
+		);
+	}
+
+	/**
+	 * @param int      $p_project_id Project id.
+	 * @param int|null $p_bug_id     Bug id when editing.
+	 *
+	 * @return bool
+	 */
+	public static function can_update_due_date( $p_project_id, $p_bug_id = null ) {
+		if( !self::can_show_due_date( $p_project_id, $p_bug_id ) ) {
+			return false;
+		}
+		if( $p_bug_id !== null && $p_bug_id > 0 ) {
+			return access_has_bug_level( config_get( 'due_date_update_threshold' ), $p_bug_id );
+		}
+		return access_has_project_level(
+			config_get( 'due_date_update_threshold' ),
+			$p_project_id,
+			auth_get_current_user_id()
+		);
+	}
+
 	public static function default_category_id( $p_project_id ) {
 		if( config_get( 'allow_no_category', null, null, $p_project_id ) ) {
 			return 0;
@@ -149,13 +256,11 @@ class KanbanIssueHelper {
 	 * @return array
 	 */
 	public static function build_form_payload( $p_bug_id, $p_project_id ) {
-		$t_badges = self::priority_badges();
 		$t_priorities = array();
-		foreach( $t_badges as $t_id => $t_badge ) {
+		foreach( self::priority_options() as $t_id => $t_label ) {
 			$t_priorities[] = array(
 				'id' => (int)$t_id,
-				'label' => $t_badge['label'],
-				'class' => $t_badge['class'],
+				'label' => $t_label,
 			);
 		}
 
@@ -194,7 +299,7 @@ class KanbanIssueHelper {
 
 			$t_due = '';
 			if( !date_is_null( $t_bug->due_date ) ) {
-				$t_due = date( 'Y-m-d', $t_bug->due_date );
+				$t_due = date( config_get( 'normal_date_format' ), $t_bug->due_date );
 			}
 
 			$t_issue = array(
@@ -226,8 +331,12 @@ class KanbanIssueHelper {
 		}
 
 		$t_versions = array();
-		foreach( self::version_options( $p_project_id ) as $t_version ) {
-			$t_versions[] = array( 'name' => $t_version );
+		foreach( self::sorted_version_rows( $p_project_id ) as $t_row ) {
+			$t_versions[] = array(
+				'id' => (int)$t_row['id'],
+				'name' => $t_row['version'],
+				'date_order' => self::version_row_date_order( $t_row ),
+			);
 		}
 
 		$t_projects = array();
@@ -252,10 +361,28 @@ class KanbanIssueHelper {
 				&& access_has_bug_level( config_get( 'update_bug_status_threshold' ), $t_bug_id );
 		}
 
+		$t_title = lang_get( 'report_bug_link' );
+		$t_meta_created = '';
+		$t_meta_updated = '';
+		if( $t_mode === 'edit' && $t_bug_id > 0 ) {
+			$t_title = bug_format_id( $t_bug_id );
+			$t_meta_created = lang_get( 'date_submitted' ) . ': ' . $t_issue['date_submitted'];
+			$t_meta_updated = lang_get( 'last_update' ) . ': ' . $t_issue['last_updated'];
+		}
+
 		return array(
 			'ok' => true,
 			'mode' => $t_mode,
 			'issue' => $t_issue,
+			'ui' => array(
+				'title' => $t_title,
+				'meta_created' => $t_meta_created,
+				'meta_updated' => $t_meta_updated,
+				'save_create' => lang_get( 'submit_report_button' ),
+				'save_update' => lang_get( 'update_information_button' ),
+				'save_new' => lang_get( 'report_more_bugs' ),
+				'empty_version' => '',
+			),
 			'options' => array(
 				'statuses' => $t_status_list,
 				'versions' => $t_versions,
@@ -263,6 +390,7 @@ class KanbanIssueHelper {
 				'reporters' => $t_reporters,
 				'priorities' => $t_priorities,
 				'tag_separator' => config_get( 'tag_separator' ),
+				'tag_hint' => sprintf( lang_get( 'tag_separate_by' ), config_get( 'tag_separator' ) ),
 			),
 			'permissions' => array(
 				'can_edit' => $t_mode === 'create' ? $t_can_create : $t_can_update,
@@ -270,9 +398,8 @@ class KanbanIssueHelper {
 				'can_change_version' => $t_mode === 'create' ? $t_can_create : access_has_bug_level( config_get( 'roadmap_update_threshold' ), $t_bug_id ),
 				'can_change_project' => $t_mode === 'create' ? $t_can_create : access_has_bug_level( config_get( 'move_bug_threshold' ), $t_bug_id ),
 				'can_change_reporter' => $t_mode === 'create' ? $t_can_create : $t_can_update,
-				'can_change_due_date' => $t_mode === 'create'
-					? $t_can_create
-					: access_has_bug_level( config_get( 'due_date_update_threshold' ), $t_bug_id ),
+				'can_show_due_date' => self::can_show_due_date( $p_project_id, $t_bug_id > 0 ? $t_bug_id : null ),
+				'can_change_due_date' => self::can_update_due_date( $p_project_id, $t_bug_id > 0 ? $t_bug_id : null ),
 				'can_change_tags' => $t_mode === 'create'
 					? $t_can_create && access_has_project_level( config_get( 'tag_attach_threshold' ), $p_project_id )
 					: access_has_bug_level( config_get( 'tag_attach_threshold' ), $t_bug_id ),
@@ -291,11 +418,7 @@ class KanbanIssueHelper {
 		if( is_blank( $p_due_date ) ) {
 			return date_get_null();
 		}
-		$t_ts = strtotime( $p_due_date );
-		if( $t_ts === false ) {
-			throw new ClientException( 'Invalid due date', ERROR_INVALID_FIELD_VALUE, array( lang_get( 'due_date' ) ) );
-		}
-		return $t_ts;
+		return date_strtotime( $p_due_date );
 	}
 
 	/**
@@ -355,7 +478,9 @@ class KanbanIssueHelper {
 			$t_bug->target_version = '';
 		}
 		$t_bug->category_id = self::default_category_id( $f_project_id );
-		$t_bug->due_date = self::parse_due_date( gpc_get_string( 'due_date', '' ) );
+		if( self::can_update_due_date( $f_project_id ) && gpc_isset( 'due_date' ) ) {
+			$t_bug->due_date = self::parse_due_date( gpc_get_string( 'due_date' ) );
+		}
 		$t_bug->severity = (int)config_get( 'default_bug_severity' );
 		$t_bug->reproducibility = (int)config_get( 'default_bug_reproducibility' );
 		$t_bug->view_state = (int)config_get( 'default_bug_view_status' );

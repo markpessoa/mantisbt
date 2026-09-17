@@ -20,6 +20,8 @@
 
 auth_ensure_user_authenticated();
 
+require_once dirname( __DIR__ ) . '/KanbanIssueHelper.php';
+
 $t_project_id = helper_get_current_project();
 $t_board_url = plugin_page( 'board' );
 $t_move_url = plugin_page( 'move' );
@@ -32,6 +34,10 @@ $t_issue_token = form_security_token( $t_issue_form_name );
 $t_issue_delete_form_name = KanbanPlugin::FORM_ISSUE_DELETE;
 $t_issue_delete_token = form_security_token( $t_issue_delete_form_name );
 $t_can_report = access_has_project_level( config_get( 'report_bug_threshold' ), $t_project_id );
+$t_kanban_due_date = KanbanIssueHelper::board_uses_due_date( $t_project_id );
+if( $t_kanban_due_date ) {
+	require_api( 'datetimepicker_api.php' );
+}
 
 $t_page_number = 1;
 $t_per_page = -1;
@@ -122,9 +128,7 @@ foreach( $t_priority_values as $t_priority_id ) {
 }
 
 $t_version_meta = array();
-$t_version_rows = version_get_all_rows( $t_project_id, VERSION_ALL, false );
-# API returns newest first; board shows oldest lane at top, newest at bottom.
-$t_version_rows = array_reverse( $t_version_rows );
+$t_version_rows = KanbanIssueHelper::sorted_version_rows( $t_project_id );
 foreach( $t_version_rows as $t_version_row ) {
 	$t_version_meta[$t_version_row['version']] = $t_version_row;
 }
@@ -142,7 +146,7 @@ foreach( $t_version_rows as $t_version_row ) {
 	$t_lanes[] = array(
 		'key' => $t_vname,
 		'label' => $t_vname,
-		'date_order' => (int)$t_version_row['date_order'],
+		'date_order' => KanbanIssueHelper::version_row_date_order( $t_version_row ),
 		'bugs' => isset( $t_by_version[$t_vname] ) ? $t_by_version[$t_vname] : array(),
 		'count' => $t_lane_bugs,
 	);
@@ -168,6 +172,24 @@ foreach( $t_by_version as $t_vname => $t_version_bugs ) {
 		$t_lane_keys_added[$t_vname] = true;
 	}
 }
+
+usort(
+	$t_lanes,
+	function( $p_a, $p_b ) {
+		$t_a = (int)$p_a['date_order'];
+		$t_b = (int)$p_b['date_order'];
+		if( $t_a === 0 && $t_b === 0 ) {
+			return 0;
+		}
+		if( $t_a === 0 ) {
+			return 1;
+		}
+		if( $t_b === 0 ) {
+			return -1;
+		}
+		return $t_a - $t_b;
+	}
+);
 
 $t_none_key = '';
 $t_none_count = 0;
@@ -206,7 +228,7 @@ layout_page_begin( $t_board_url );
 			<span class="kanban-toolbar-count"><?php echo sprintf( plugin_lang_get( 'cards_count' ), $t_total_cards ); ?></span>
 			<?php if( $t_can_report ) { ?>
 			<button type="button" class="kanban-btn kanban-btn-new" id="kanban-new-issue">
-				<?php echo string_display_line( plugin_lang_get( 'new_issue' ) ); ?>
+				<?php echo string_display_line( lang_get( 'report_bug_link' ) ); ?>
 			</button>
 			<?php } ?>
 		</div>
@@ -347,58 +369,54 @@ foreach( $t_lanes as $t_lane ) {
 </div>
 
 <dialog id="kanban-issue-dialog" class="kanban-dialog" aria-labelledby="kanban-dialog-title"
-	data-title-new="<?php echo string_attribute( plugin_lang_get( 'modal_new_issue' ) ); ?>"
-	data-title-card="<?php echo string_attribute( plugin_lang_get( 'modal_card_prefix' ) ); ?>"
-	data-confirm-delete="<?php echo string_attribute( plugin_lang_get( 'confirm_delete' ) ); ?>"
-	data-meta-created="<?php echo string_attribute( plugin_lang_get( 'meta_created' ) ); ?>"
-	data-meta-updated="<?php echo string_attribute( plugin_lang_get( 'meta_updated' ) ); ?>"
-	data-no-version="<?php echo string_attribute( plugin_lang_get( 'no_version' ) ); ?>">
+	data-confirm-delete="<?php echo string_attribute( lang_get( 'delete_bug_sure_msg' ) ); ?>">
 	<form id="kanban-issue-form" method="dialog" class="kanban-dialog-form">
 		<header class="kanban-dialog-header">
 			<h2 id="kanban-dialog-title" class="kanban-dialog-title"></h2>
-			<button type="button" class="kanban-dialog-close" id="kanban-dialog-close" aria-label="<?php echo string_attribute( plugin_lang_get( 'modal_close' ) ); ?>">&times;</button>
+			<button type="button" class="kanban-dialog-close" id="kanban-dialog-close" aria-label="<?php echo string_attribute( lang_get( 'close' ) ); ?>">&times;</button>
 		</header>
 		<div class="kanban-dialog-body">
 			<p class="kanban-dialog-error" id="kanban-dialog-error" hidden></p>
 			<div class="kanban-field">
-				<label for="kanban-field-summary"><?php echo string_display_line( plugin_lang_get( 'field_summary' ) ); ?></label>
+				<label for="kanban-field-summary"><?php echo string_display_line( lang_get( 'summary' ) ); ?></label>
 				<input type="text" id="kanban-field-summary" name="summary" maxlength="128" required />
 			</div>
 			<div class="kanban-field">
-				<label for="kanban-field-description"><?php echo string_display_line( plugin_lang_get( 'field_description' ) ); ?></label>
+				<label for="kanban-field-description"><?php echo string_display_line( lang_get( 'description' ) ); ?></label>
 				<textarea id="kanban-field-description" name="description" rows="5" required></textarea>
 			</div>
 			<div class="kanban-field-row kanban-field-row-2">
 				<div class="kanban-field">
-					<label for="kanban-field-reporter"><?php echo string_display_line( plugin_lang_get( 'field_reporter' ) ); ?></label>
+					<label for="kanban-field-reporter"><?php echo string_display_line( lang_get( 'reporter' ) ); ?></label>
 					<select id="kanban-field-reporter" name="reporter_id"></select>
 				</div>
-				<div class="kanban-field">
-					<label for="kanban-field-due"><?php echo string_display_line( plugin_lang_get( 'field_due_date' ) ); ?></label>
-					<input type="date" id="kanban-field-due" name="due_date" />
+				<div class="kanban-field kanban-field-due" id="kanban-due-date-wrap">
+					<label for="due_date"><?php echo string_display_line( lang_get( 'due_date' ) ); ?></label>
+					<div class="kanban-due-date-input">
+						<?php datetimepicker_print( '', 'due_date' ); ?>
+					</div>
 				</div>
 			</div>
 			<div class="kanban-field-row kanban-field-row-3">
 				<div class="kanban-field">
-					<span class="kanban-field-label"><?php echo string_display_line( plugin_lang_get( 'field_priority' ) ); ?></span>
-					<div class="kanban-priority-picker" id="kanban-priority-picker" role="group"></div>
-					<input type="hidden" id="kanban-field-priority" name="priority" />
+					<label for="kanban-field-priority"><?php echo string_display_line( lang_get( 'priority' ) ); ?></label>
+					<select id="kanban-field-priority" name="priority"></select>
 				</div>
 				<div class="kanban-field">
-					<label for="kanban-field-status"><?php echo string_display_line( plugin_lang_get( 'field_status' ) ); ?></label>
+					<label for="kanban-field-status"><?php echo string_display_line( lang_get( 'status' ) ); ?></label>
 					<select id="kanban-field-status" name="status"></select>
 				</div>
 				<div class="kanban-field">
-					<label for="kanban-field-version"><?php echo string_display_line( plugin_lang_get( 'field_version' ) ); ?></label>
+					<label for="kanban-field-version"><?php echo string_display_line( lang_get( 'target_version' ) ); ?></label>
 					<select id="kanban-field-version" name="target_version"></select>
 				</div>
 			</div>
 			<div class="kanban-field">
-				<label for="kanban-field-project"><?php echo string_display_line( plugin_lang_get( 'field_project' ) ); ?> *</label>
+				<label for="kanban-field-project"><?php echo string_display_line( lang_get( 'email_project' ) ); ?> *</label>
 				<select id="kanban-field-project" name="project_id" required></select>
 			</div>
 			<div class="kanban-field">
-				<label for="kanban-field-tags"><?php echo string_display_line( plugin_lang_get( 'field_tags' ) ); ?></label>
+				<label for="kanban-field-tags"><?php echo string_display_line( lang_get( 'tags' ) ); ?></label>
 				<input type="text" id="kanban-field-tags" name="tag_string" autocomplete="off" />
 				<span class="kanban-field-hint" id="kanban-tags-hint"></span>
 			</div>
@@ -410,18 +428,18 @@ foreach( $t_lanes as $t_lane ) {
 		<footer class="kanban-dialog-footer">
 			<div class="kanban-dialog-footer-left">
 				<button type="button" class="kanban-btn kanban-btn-muted" id="kanban-btn-archive" hidden>
-					<?php echo string_display_line( plugin_lang_get( 'action_archive' ) ); ?>
+					<?php echo string_display_line( lang_get( 'closed_bug_button' ) ); ?>
 				</button>
 				<button type="button" class="kanban-btn kanban-btn-danger-text" id="kanban-btn-delete" hidden>
-					<?php echo string_display_line( plugin_lang_get( 'action_delete' ) ); ?>
+					<?php echo string_display_line( lang_get( 'delete' ) ); ?>
 				</button>
 			</div>
 			<div class="kanban-dialog-footer-right">
 				<button type="button" class="kanban-btn kanban-btn-muted" id="kanban-btn-save-new" hidden>
-					<?php echo string_display_line( plugin_lang_get( 'action_save_new' ) ); ?>
+					<?php echo string_display_line( lang_get( 'report_more_bugs' ) ); ?>
 				</button>
 				<button type="submit" class="kanban-btn kanban-btn-primary" id="kanban-btn-save">
-					<?php echo string_display_line( plugin_lang_get( 'action_save' ) ); ?>
+					<?php echo string_display_line( lang_get( 'update_information_button' ) ); ?>
 				</button>
 			</div>
 		</footer>
