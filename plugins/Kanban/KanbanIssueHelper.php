@@ -102,11 +102,11 @@ class KanbanIssueHelper {
 	}
 
 	/**
-	 * Project versions sorted by date (oldest first), matching the Kanban board.
+	 * Normalize a version row's ordering date to a Unix timestamp.
 	 *
-	 * @param int $p_project_id Project id.
+	 * @param array $p_row Version database row.
 	 *
-	 * @return array
+	 * @return int
 	 */
 	public static function version_row_date_order( array $p_row ) {
 		$t_val = $p_row['date_order'];
@@ -445,13 +445,24 @@ class KanbanIssueHelper {
 	 * @return array
 	 */
 	public static function board_version_rows( $p_project_id ) {
-		$t_rows = version_get_all_rows( $p_project_id, VERSION_FUTURE, false );
+		# Query the flags explicitly. This avoids database/driver differences in
+		# version_get_all_rows() boolean filtering and guarantees the board rule:
+		# released = 0 AND obsolete = 0.
+		db_param_push();
+		$t_query = 'SELECT id, project_id, version, description, released, obsolete, date_order'
+			. ' FROM ' . db_get_table( 'project_version' )
+			. ' WHERE project_id=' . db_param()
+			. ' AND released=' . db_param()
+			. ' AND obsolete=' . db_param();
+		$t_result = db_query( $t_query, array( (int)$p_project_id, 0, 0 ) );
+
+		$t_rows = array();
+		while( $t_row = db_fetch_array( $t_result ) ) {
+			$t_rows[] = $t_row;
+		}
 		$t_visible = array();
 		foreach( $t_rows as $t_row ) {
 			if( self::version_hidden_on_board( $t_row ) ) {
-				continue;
-			}
-			if( version_is_released( (int)$t_row['id'] ) ) {
 				continue;
 			}
 			$t_visible[] = $t_row;
@@ -470,18 +481,7 @@ class KanbanIssueHelper {
 	}
 
 	public static function sorted_version_rows( $p_project_id ) {
-		$t_rows = version_get_all_rows( $p_project_id, VERSION_ALL, false );
-		usort(
-			$t_rows,
-			function( $p_a, $p_b ) {
-				$t_cmp = self::version_row_date_order( $p_a ) - self::version_row_date_order( $p_b );
-				if( $t_cmp !== 0 ) {
-					return $t_cmp;
-				}
-				return (int)$p_a['id'] - (int)$p_b['id'];
-			}
-		);
-		return $t_rows;
+		return self::board_version_rows( $p_project_id );
 	}
 
 	/**

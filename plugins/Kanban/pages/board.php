@@ -121,7 +121,7 @@ if( $t_status_count < 1 ) {
 
 $t_priority_badges = KanbanIssueHelper::priority_badges();
 
-$t_version_rows = KanbanIssueHelper::board_version_rows( $t_project_id );
+$t_version_rows = KanbanIssueHelper::sorted_version_rows( $t_project_id );
 
 $t_lanes = array();
 $t_lane_keys_added = array();
