@@ -1,6 +1,6 @@
 /**
  * Kanban board — fullscreen chrome, lanes by version.
- * Inter @font-face is injected from Kanban.php (plugin_file URLs + woff2 MIME).
+ * Inter + JetBrains Mono loaded from Google Fonts on the board page (Kanban.php).
  */
 
 /* --- Fullscreen chrome (Kanban page only) --- */
@@ -410,7 +410,7 @@ body#kanban-board-page .kanban-lane-header {
 	flex: 0 0 auto;
 	font-size: 0.85rem;
 	opacity: 0.4;
-	font-family: monospace;
+	font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	padding: 8px 4px;
 	pointer-events: none;
 	user-select: none;
@@ -595,7 +595,7 @@ body.kanban-is-dragging {
 	font-weight: 400;
 	color: var(--kanban-muted-color);
 	opacity: 1;
-	font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+	font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .kanban-cell-more {

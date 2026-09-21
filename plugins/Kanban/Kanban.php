@@ -22,6 +22,9 @@ class KanbanPlugin extends MantisPlugin {
 	const FORM_ISSUE = 'plugin_kanban_issue';
 	const FORM_ISSUE_DELETE = 'plugin_kanban_issue_delete';
 
+	/** Google Fonts: Inter + JetBrains Mono (Kanban board only). */
+	const GOOGLE_FONTS_URL = 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap';
+
 	/**
 	 * Statuses hidden unless the board has at least one card in them
 	 * (retorno / admitido).
@@ -42,7 +45,7 @@ class KanbanPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = '';
 
-		$this->version = '1.5.0';
+		$this->version = '1.5.1';
 		$this->requires = array(
 			'MantisCore' => '2.25.0',
 		);
@@ -60,10 +63,24 @@ class KanbanPlugin extends MantisPlugin {
 	function hooks() {
 		return array(
 			'EVENT_MENU_MAIN_FILTER' => 'menu_filter',
+			'EVENT_CORE_HEADERS' => 'csp_headers',
 			'EVENT_LAYOUT_RESOURCES' => 'resources',
 			'EVENT_LAYOUT_BODY_BEGIN' => 'body_styles',
 			'EVENT_LAYOUT_BODY_END' => 'scripts',
 		);
+	}
+
+	/**
+	 * Allow Google Fonts on the Kanban board when CSP is enabled.
+	 *
+	 * @return void
+	 */
+	function csp_headers() {
+		if( !$this->is_board_page() ) {
+			return;
+		}
+		http_csp_add( 'style-src', 'fonts.googleapis.com' );
+		http_csp_add( 'font-src', 'fonts.gstatic.com' );
 	}
 
 	/**
@@ -154,6 +171,10 @@ class KanbanPlugin extends MantisPlugin {
 		}
 
 		$t_ver = urlencode( $this->version );
+		$t_fonts_url = htmlspecialchars( self::GOOGLE_FONTS_URL, ENT_QUOTES, 'UTF-8' );
+		echo '<link rel="preconnect" href="https://fonts.googleapis.com" />' . "\n";
+		echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />' . "\n";
+		echo '<link rel="stylesheet" href="' . $t_fonts_url . '" />' . "\n";
 		echo '<link rel="stylesheet" href="' . plugin_file( 'kanban.css' ) . '&amp;v=' . $t_ver . '" />' . "\n";
 	}
 
@@ -171,20 +192,12 @@ class KanbanPlugin extends MantisPlugin {
 	}
 
 	/**
-	 * Inter + near-black board. Inline so plugin_file.php cache cannot hide it.
+	 * DevBoard look (Inter + JetBrains Mono via Google Fonts). Inline overrides theme CSS.
 	 *
 	 * @return void
 	 */
 	function echo_devboard_css() {
-		$t_ver = urlencode( $this->version );
-		$t_font_400 = htmlspecialchars( plugin_file( 'fonts/inter-latin-400.woff2' ) . '&v=' . $t_ver, ENT_QUOTES, 'UTF-8' );
-		$t_font_600 = htmlspecialchars( plugin_file( 'fonts/inter-latin-600.woff2' ) . '&v=' . $t_ver, ENT_QUOTES, 'UTF-8' );
-		$t_font_700 = htmlspecialchars( plugin_file( 'fonts/inter-latin-700.woff2' ) . '&v=' . $t_ver, ENT_QUOTES, 'UTF-8' );
-
 		echo '<style id="kanban-devboard-inline">';
-		echo '@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url("' . $t_font_400 . '") format("woff2")}';
-		echo '@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url("' . $t_font_600 . '") format("woff2")}';
-		echo '@font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:swap;src:url("' . $t_font_700 . '") format("woff2")}';
 		echo 'html:has(body#kanban-board-page),body#kanban-board-page,body#kanban-board-page.skin-3,';
 		echo 'body#kanban-board-page .main-container,body#kanban-board-page .main-content,';
 		echo 'body#kanban-board-page .page-content,body#kanban-board-page #navbar,';
@@ -205,7 +218,8 @@ class KanbanPlugin extends MantisPlugin {
 		echo 'body#kanban-board-page .kanban-card{background:#141414!important;border:1px solid rgba(255,255,255,.08)!important;padding:10px 12px!important;gap:4px!important;border-radius:4px!important}';
 		echo 'body#kanban-board-page .kanban-card-summary{font-size:14px!important;font-weight:600!important;line-height:1.3!important;color:#f5f5f5!important}';
 		echo 'body#kanban-board-page .kanban-card-description{font-size:13px!important;font-weight:400!important;line-height:1.4!important;color:#a3a3a3!important;opacity:1!important}';
-		echo 'body#kanban-board-page .kanban-card-id{font-size:12px!important;font-weight:400!important;color:#a3a3a3!important;opacity:1!important;font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}';
+		echo 'body#kanban-board-page .kanban-card-id,body#kanban-board-page .kanban-toolbar-prompt,body#kanban-board-page .kanban-empty{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important}';
+		echo 'body#kanban-board-page .kanban-card-id{font-size:12px!important;font-weight:400!important;color:#a3a3a3!important;opacity:1!important}';
 		echo 'body#kanban-board-page .kanban-card-footer{margin-top:2px!important;padding-top:4px!important;border-top-color:rgba(255,255,255,.08)!important}';
 		echo 'body#kanban-board-page .kanban-card-priority{font-size:11px!important;font-weight:700!important}';
 		echo 'body#kanban-board-page .kanban-cell{padding:8px!important;gap:8px!important}';
