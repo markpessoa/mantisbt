@@ -213,6 +213,20 @@ layout_page_begin( $t_board_url );
 		</div>
 		<div class="kanban-toolbar-actions">
 			<span class="kanban-toolbar-count"><?php echo sprintf( plugin_lang_get( 'cards_count' ), $t_total_cards ); ?></span>
+			<button type="button"
+				class="kanban-btn kanban-btn-toggle"
+				id="kanban-toggle-priority"
+				aria-pressed="true"
+				title="<?php echo string_attribute( plugin_lang_get( 'toggle_priority' ) ); ?>">
+				<?php echo string_display_line( plugin_lang_get( 'toggle_priority' ) ); ?>
+			</button>
+			<button type="button"
+				class="kanban-btn kanban-btn-toggle"
+				id="kanban-toggle-description"
+				aria-pressed="true"
+				title="<?php echo string_attribute( plugin_lang_get( 'toggle_description' ) ); ?>">
+				<?php echo string_display_line( plugin_lang_get( 'toggle_description' ) ); ?>
+			</button>
 			<?php if( $t_can_report ) { ?>
 			<button type="button" class="kanban-btn kanban-btn-new" id="kanban-new-issue">
 				<?php echo string_display_line( lang_get( 'report_bug_link' ) ); ?>

@@ -20,8 +20,66 @@
 	var issueDeleteTokenName = board.getAttribute('data-issue-delete-token-name');
 	var issueDeleteTokenValue = board.getAttribute('data-issue-delete-token-value');
 	var storagePrefix = 'kanban-lane-collapsed-';
+	var storageHidePriority = 'kanban-hide-priority';
+	var storageHideDescription = 'kanban-hide-description';
 	var emptyLabel = board.getAttribute('data-empty-label') || '// EMPTY';
 	var THRESHOLD = 6;
+
+	function applyFieldVisibility() {
+		var hidePriority = false;
+		var hideDescription = false;
+		try {
+			hidePriority = window.localStorage.getItem(storageHidePriority) === '1';
+			hideDescription = window.localStorage.getItem(storageHideDescription) === '1';
+		} catch (e) {
+			/* ignore */
+		}
+		document.body.classList.toggle('kanban-hide-priority', hidePriority);
+		document.body.classList.toggle('kanban-hide-description', hideDescription);
+
+		var btnPriority = document.getElementById('kanban-toggle-priority');
+		var btnDescription = document.getElementById('kanban-toggle-description');
+		if (btnPriority) {
+			btnPriority.setAttribute('aria-pressed', hidePriority ? 'false' : 'true');
+		}
+		if (btnDescription) {
+			btnDescription.setAttribute('aria-pressed', hideDescription ? 'false' : 'true');
+		}
+	}
+
+	function bindFieldVisibilityToggles() {
+		var btnPriority = document.getElementById('kanban-toggle-priority');
+		var btnDescription = document.getElementById('kanban-toggle-description');
+
+		if (btnPriority) {
+			btnPriority.addEventListener('click', function () {
+				var hide = !document.body.classList.contains('kanban-hide-priority');
+				document.body.classList.toggle('kanban-hide-priority', hide);
+				btnPriority.setAttribute('aria-pressed', hide ? 'false' : 'true');
+				try {
+					window.localStorage.setItem(storageHidePriority, hide ? '1' : '0');
+				} catch (e) {
+					/* ignore */
+				}
+			});
+		}
+
+		if (btnDescription) {
+			btnDescription.addEventListener('click', function () {
+				var hide = !document.body.classList.contains('kanban-hide-description');
+				document.body.classList.toggle('kanban-hide-description', hide);
+				btnDescription.setAttribute('aria-pressed', hide ? 'false' : 'true');
+				try {
+					window.localStorage.setItem(storageHideDescription, hide ? '1' : '0');
+				} catch (e) {
+					/* ignore */
+				}
+			});
+		}
+	}
+
+	applyFieldVisibility();
+	bindFieldVisibilityToggles();
 
 	var dialog = document.getElementById('kanban-issue-dialog');
 	var issueForm = document.getElementById('kanban-issue-form');

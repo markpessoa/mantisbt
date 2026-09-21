@@ -654,6 +654,33 @@ body.kanban-is-dragging {
 	font-weight: 600;
 }
 
+.kanban-btn-toggle {
+	font-size: 0.9rem;
+	padding: 4px 10px;
+}
+
+.kanban-btn-toggle[aria-pressed="true"] {
+	background: rgba(128, 128, 128, 0.22);
+	border-color: rgba(128, 128, 128, 0.55);
+}
+
+.kanban-btn-toggle[aria-pressed="false"] {
+	opacity: 0.55;
+	background: transparent;
+}
+
+body.kanban-hide-priority .kanban-card-priority {
+	display: none;
+}
+
+body.kanban-hide-description .kanban-card-description {
+	display: none;
+}
+
+body.kanban-hide-priority .kanban-card-header:not(:has(.kanban-card-handle)) {
+	display: none;
+}
+
 .kanban-dialog {
 	--kanban-text: 0.95rem;
 	--kanban-text-title: 1rem;

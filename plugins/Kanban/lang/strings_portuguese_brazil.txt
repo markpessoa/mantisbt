@@ -25,3 +25,5 @@ $s_plugin_Kanban_no_version = 'Sem versão';
 $s_plugin_Kanban_cards_count = '%1$d cards';
 $s_plugin_Kanban_drag_handle = 'Arrastar para mudar o status';
 $s_plugin_Kanban_rank_schema_required = 'Execute a atualização do plugin Kanban para habilitar a ordenação dos cards.';
+$s_plugin_Kanban_toggle_priority = 'Prioridade';
+$s_plugin_Kanban_toggle_description = 'Descrição';
