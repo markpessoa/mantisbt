@@ -29,7 +29,7 @@ class KanbanPlugin extends MantisPlugin {
 	 * @return int[]
 	 */
 	public static function optional_status_ids() {
-		return array( FEEDBACK, ACKNOWLEDGED );
+		return array( FEEDBACK, ACKNOWLEDGED, CONFIRMED, ASSIGNED);
 	}
 
 	/**
