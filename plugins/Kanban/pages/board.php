@@ -70,7 +70,13 @@ $t_rows = array_values( array_filter(
 
 $t_by_version = array();
 foreach( $t_rows as $t_bug ) {
-	$t_version_key = (string)$t_bug->target_version;
+	$t_version_key = KanbanIssueHelper::board_lane_key_for_version(
+		$t_project_id,
+		(string)$t_bug->target_version
+	);
+	if( $t_version_key === null ) {
+		continue;
+	}
 	if( !isset( $t_by_version[$t_version_key] ) ) {
 		$t_by_version[$t_version_key] = array();
 	}
@@ -88,10 +94,12 @@ $t_status_totals = array();
 foreach( $t_statuses as $t_status_id => $t_status_code ) {
 	$t_status_totals[(int)$t_status_id] = 0;
 }
-foreach( $t_rows as $t_bug ) {
-	$t_sid = (int)$t_bug->status;
-	if( isset( $t_status_totals[$t_sid] ) ) {
-		$t_status_totals[$t_sid]++;
+foreach( $t_by_version as $t_version_bugs ) {
+	foreach( $t_version_bugs as $t_status_id => $t_status_bugs ) {
+		$t_sid = (int)$t_status_id;
+		if( isset( $t_status_totals[$t_sid] ) ) {
+			$t_status_totals[$t_sid] += count( $t_status_bugs );
+		}
 	}
 }
 
@@ -113,11 +121,14 @@ if( $t_status_count < 1 ) {
 
 $t_priority_badges = KanbanIssueHelper::priority_badges();
 
-$t_version_rows = KanbanIssueHelper::sorted_version_rows( $t_project_id );
+$t_version_rows = KanbanIssueHelper::board_version_rows( $t_project_id );
 
 $t_lanes = array();
 $t_lane_keys_added = array();
 foreach( $t_version_rows as $t_version_row ) {
+	if( KanbanIssueHelper::version_hidden_on_board( $t_version_row ) ) {
+		continue;
+	}
 	$t_vname = $t_version_row['version'];
 	$t_lane_bugs = 0;
 	if( isset( $t_by_version[$t_vname] ) ) {
@@ -133,26 +144,6 @@ foreach( $t_version_rows as $t_version_row ) {
 		'count' => $t_lane_bugs,
 	);
 	$t_lane_keys_added[$t_vname] = true;
-}
-
-foreach( $t_by_version as $t_vname => $t_version_bugs ) {
-	if( $t_vname === '' || isset( $t_lane_keys_added[$t_vname] ) ) {
-		continue;
-	}
-	$t_lane_bugs = 0;
-	foreach( $t_version_bugs as $t_status_bugs ) {
-		$t_lane_bugs += count( $t_status_bugs );
-	}
-	if( $t_lane_bugs > 0 ) {
-		$t_lanes[] = array(
-			'key' => $t_vname,
-			'label' => $t_vname,
-			'date_order' => 0,
-			'bugs' => $t_version_bugs,
-			'count' => $t_lane_bugs,
-		);
-		$t_lane_keys_added[$t_vname] = true;
-	}
 }
 
 usort(
@@ -192,7 +183,7 @@ if( $t_none_count > 0 ) {
 
 $t_max_per_cell = 200;
 $t_project_name = project_get_name( $t_project_id );
-$t_total_cards = count( $t_rows );
+$t_total_cards = array_sum( $t_status_totals );
 
 $t_rank_bug_ids = array();
 foreach( $t_rows as $t_rank_bug ) {

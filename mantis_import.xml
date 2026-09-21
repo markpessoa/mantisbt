@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mantis version="2.29.0-dev" urlbase="http://localhost/" issuelink="#" notelink="~" format="1">
+    <issue>
+        <id>17</id>
+        <summary>Integração com PSP Stripe</summary>
+        <description>Aguardando decisão de qual PSP iremos usar
+Stripe: https://stripe.com/br/pricing?utm_source=chatgpt.com</description>
+        <additional_information>Tags: Desenv</additional_information>
+        <status id="10">new</status>
+        <priority id="50">urgent</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <date_submitted>1787250431</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>34</id>
+        <summary>Logar ações dos usuários</summary>
+        <description>Quando um usuário interage com a plataforma
+quero logar o que ele fez
+para poder ter métricas de cliques e uso da plataforma
+(seria via hostinger ou google?)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787261257</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>50</id>
+        <summary>Victor e Renan: Criar Página FB e BM</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="40">high</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787576960</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>20</id>
+        <summary>implementar google login</summary>
+        <description>implementar google login
+já tem algum planejamento no cursor</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <date_submitted>1787250506</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>90</id>
+        <summary>BOTÃO DE VOLTAR MAIS VISÍVEL</summary>
+        <description>botão para voltar mais visível (além do cancelar ou empresa)
+trocar o botão de HOME do beadcrumb para uma seta de VOLTAR para o nível inferior</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <date_submitted>1788539890</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>89</id>
+        <summary>Condensar dados de páginas</summary>
+        <description>condensar:
+
+DADOS DA EMPRESA
+nome fantasia, cnpj, endereço
+
+PÁGINA
+nome e imagem (logo, banner)
+descrição da casa
+slug público
+exibir ou ocultar eventos passados
+
+CONFIGURAÇÕES/REDES
+IG, FB, TikTok, Wpp, (GTM, Pixel, GA4...) 
+
+STAFF
+equipe com acesso check-in e operação</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <date_submitted>1788539758</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>92</id>
+        <summary>SALVAR EVENTO deve voltar para a etapa superior</summary>
+        <description>Fluxo após salvar o evento
+
+* Quando clico em “Salvar evento”, o sistema permanece na mesma aba.
+* Acho que seria mais prático que, depois de salvar, ele já me levasse automaticamente para a página inicial, sem eu precisar clicar em “Voltar para evento”.</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <date_submitted>1788540179</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>15</id>
+        <summary>Evve: comparar taxas Stone X Mercado Pago</summary>
+        <description>Victor apresentar taxas Stone x Mercado Pago para tomada de decisão de PSP. Mark tem preferência por MP porque documentação de API é mais robusta.</description>
+        <additional_information>Sugerido por: Vitor</additional_information>
+        <status id="65">in_progress</status>
+        <priority id="50">urgent</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1787250360</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>104</id>
+        <summary>Novo Layout na anding e em todo o site</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1789479675</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>88</id>
+        <summary>Botão de publicar e link do evento na aba principal do Evento</summary>
+        <description>condensar:
+
+DADOS DO EVENTO:
+nome, data de início e fim, endereço
+imagem do card e da página pública
+descrição do evento
+
+PIX
+
+VENDAS E LISTAS</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1788539710</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>51</id>
+        <summary>Renan: criar contas de anúncios</summary>
+        <description>Meta, Google Ads e GTM</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787577017</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>7</id>
+        <summary>K: lanes por semana</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787249449</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>95</id>
+        <summary>dashboard com checkin feitos</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1788560217</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>8</id>
+        <summary>K: Lanes por dia</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787249459</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>85</id>
+        <summary>Remover simulação de pgto</summary>
+        <description>Caso o pix fique desmarcado, então está caindo na simulação. MELHORIA: remover simulação de pgto. Hoje o ingresso pago só tem o PIX-Direto como meio de pagamento.</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1788535620</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>52</id>
+        <summary>Renan: Configurar Tags para já começarmos a rastrear eventos</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787577098</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>26</id>
+        <summary>Cliente abre ticket de suporte</summary>
+        <description>Como cliente da plataforma
+quero poder enviar mensagem para o produtor ou administrador
+para registrar reclamações e receber retorno das reclamações
+
+é uma forma de abrir chamado
+
+Caso tenha problemas no pix e mais usuários, vamos precisar criar uma forma de falar com os usuários. Usuário pode enviar um ticket de atendimento ou alguma outra forma para se comunicar com a plataforma ou com o produtor do evento</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787253358</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>61</id>
+        <summary>Funcionalidades de SEO</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787583252</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>30</id>
+        <summary>Lista VIP free com QRCODE</summary>
+        <description>Lista VIP free com qrcode? Porque é importante saber quem está entrando na casa para fazer CRM.
+é opcional e será escolhido pelo produtor ao criar o ingresso.</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787254893</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>39</id>
+        <summary>Mapa de funcionalidades dos concorrentes</summary>
+        <description>Estudar as funcionalidades dos concorrentes para adicionar no backlog de desenvolvimento</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787314552</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>27</id>
+        <summary>Cliente compra ticket na área logada</summary>
+        <description>Como cliente quero comprar tickets a partir da área logada</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787254327</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>28</id>
+        <summary>NPS Cliente</summary>
+        <description>Como Administrador
+Quero pedir para clientes informarem NPS (Net Promoter Score)
+Para saber se o site está sendo bem aceito pelos Clientes e Promotores</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787254507</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>66</id>
+        <summary>Otimização de uso</summary>
+        <description>1. Ative o cache do servidor para páginas públicas; não aplique cache em login, painel administrativo, criação/consulta de ingressos, pagamentos ou APIs dinâmicas.
+2. Otimize o banco de dados: crie índices nas colunas usadas em buscas, evite consultas repetidas e use paginação em listas de eventos, usuários e pedidos.
+3. Reduza o peso das páginas: comprima imagens, use WebP, carregamento lento para imagens e minificação de CSS/JavaScript.
+4. logar a quantidade de recursos e plotar em um gráfico na seção administrativa. salvar o uso em banco de dados.</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787687435</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>36</id>
+        <summary>Pedir email na lista free</summary>
+        <description>Cliente é informado que seu nome etá na lista free
+neste momento é importante pedir ao cliente mais informações, por exemplo o email para entrar em contato com ele depois (... e telefone também)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787262488</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>29</id>
+        <summary>Faturamento</summary>
+        <description>Como administrador
+quero informar os valores de assinatura do site
+para o promotor pagar
+
+- preço na landing
+- valores/porcentagem por ingresso
+- emissão de boleto/pagamento por pix
+- recebimento via PIX e contas ASAS/MP/Stone</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <due_date>1790553600</due_date>
+        <date_submitted>1787254687</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>31</id>
+        <summary>Venda por Watsapp</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787255444</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>103</id>
+        <summary>remover mensagem pós cadastro na lista free</summary>
+        <description>https://evveticket.com.br/climinhabar/lista-vip/e8ea238341efa81e5a61ab8cfd291a2e8350feee9c07ab3af770dfa7b85734c2
+
+HAPPY HOUR
+Ingresso: Lista free
+Isto não é um ingresso digital. A entrada é validada no check-in pelo nome — sem QR nesta etapa.
+
+essa última frase está estranha</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.10 (28set)</target_version>
+        <date_submitted>1789478233</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>33</id>
+        <summary>Cuponagem</summary>
+        <description>Produtor publica cupom de desconto CUPOM10 no Instagram
+Cliente vê esse cupom
+Cliente adiciona o ingresso no carrinho e digita o nome CUPOM10
+Cliente paga com 10% de desconto</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787260707</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>46</id>
+        <summary>Recorrência</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787533912</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>62</id>
+        <summary>Ingresso do tipo CONSUMAÇÃO</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787590223</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>105</id>
+        <summary>remover o número do pedido na página do cliente</summary>
+        <description>Quero que tire o número 3 do peido na seção de meus ingressos. Deve ficar somente Pedido na primeira linha e na segunda linha o GUID</description>
+        <status id="70">in_validation</status>
+        <priority id="50">urgent</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1789481511</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>106</id>
+        <summary>Evitar envio de nomes em duplicidade no cadastro de pessoas e compra de ingresso</summary>
+        <description>Em alguns cenários, quando a conexão de internet é ruim, o cliente pode cliar 2x no botão e o banco de dados registra 2 nomes. quero que crie mecanismos de evitar esse problema. O usuário pode cadastrar o mesmo nome multiplas vezes na listra free, mas temos que evitar duplo post em forms.</description>
+        <status id="70">in_validation</status>
+        <priority id="50">urgent</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1789483688</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>91</id>
+        <summary>Pelo Safari, não consegui anexar a imagem do QR Code.</summary>
+        <description>a</description>
+        <status id="60">prioritized</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1788540100</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>71</id>
+        <summary>Onboarding do Produtor</summary>
+        <description>Onboarding do Produtor tem que ser simples e com o mínimo de cliques possível
+
+Cadastro com email
+dados da empresa
+Evento
+Ingresso
+Vendas e Listas
+Checkin
+
+Rever esse processo com o mínimo de campos possível</description>
+        <status id="60">prioritized</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1787755431</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>65</id>
+        <summary>usuário não precisa preencher o ano porque sabe que o ano é o ano corrente.</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1787671872</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>109</id>
+        <summary>Anexar comprovante tem que ser um passo opcional para o produtor</summary>
+        <description>Onboarding do Produtor tem que ser simples e com o mínimo de cliques possível
+
+Cadastro com email
+dados da empresa
+Evento
+Ingresso
+Vendas e Listas
+Checkin
+
+Rever esse processo com o mínimo de campos possível</description>
+        <status id="60">prioritized</status>
+        <priority id="50">urgent</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1789575100</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>77</id>
+        <summary>Exibir próximos eventos no checkin com data hora da abertura</summary>
+        <description>Na página de checkin, exibir os próximos evento, mas com status de aguardando liberação (ou similar), exibindo a data-hora em que o checkin será liberado.</description>
+        <status id="60">prioritized</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1788473167</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>87</id>
+        <summary>PREENCHER A JANELA DE VENDA DO INGRESSO AUTOMATICAMENTE</summary>
+        <description>fim da janela de venda entrar automaticamente igual ao horário de inicio do evento
+
+e o inicio da janela de venda em branco ou no horário atual da criação</description>
+        <status id="60">prioritized</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1788536898</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>93</id>
+        <summary>PIX Direto: Confirmação dos pagamentos automática</summary>
+        <description>Em um dia de bastante movimento, com um evento vendendo em alto volume, fiquei pensando se a necessidade de confirmar cada pagamento um por um não pode acabar gerando uma demora grande para o produtor.
+Gostaria de saber se existe alguma possibilidade de fazer essa confirmação automática do PIX, identificando o pagamento assim que ele cair na conta.
+Acho que isso faria bastante diferença principalmente em eventos com muitas vendas simultâneas.
+
+R: Desconheço como fazer isso, mas vou deixar a ideia no backlog de futuras funcionalidades</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1788540277</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>84</id>
+        <summary>PIX Direto: enviar ingresso e QRCode por email</summary>
+        <description>envio por email sobre a aprovação do pagamento</description>
+        <status id="60">prioritized</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <target_version>0.9 (21set)</target_version>
+        <due_date>1789948800</due_date>
+        <date_submitted>1788534273</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>107</id>
+        <summary>Migrar kanban de LOVABLE para HOSTINGER</summary>
+        <description>(sem descrição)</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1789484415</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+    <issue>
+        <id>108</id>
+        <summary>Backlog único para projeto de TICKET PLATFORM</summary>
+        <description>- Ello e Evve precisam ver o backlog e solicitar priorizações
+- somente eu priorizo
+- eles podem submeter tickets
+- login com google</description>
+        <status id="10">new</status>
+        <priority id="30">normal</priority>
+        <view_state id="10">public</view_state>
+        <date_submitted>1789484604</date_submitted>
+        <project id="0">ticketeria</project>
+        <category id="0">Geral</category>
+        <reporter id="0">administrator</reporter>
+    </issue>
+</mantis>

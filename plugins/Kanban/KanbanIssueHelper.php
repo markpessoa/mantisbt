@@ -352,6 +352,123 @@ class KanbanIssueHelper {
 		);
 	}
 
+	/**
+	 * Whether a project version lane should be hidden on the Kanban board.
+	 *
+	 * @param array $p_row Version row from version_cache_row / version_get_all_rows.
+	 *
+	 * @return bool
+	 */
+	/**
+	 * Mantis stores these as booleans; drivers may return 1, '1', true, or 't'.
+	 *
+	 * @param mixed $p_value Raw column value.
+	 *
+	 * @return bool
+	 */
+	private static function version_flag_on( $p_value ) {
+		if( is_bool( $p_value ) ) {
+			return $p_value;
+		}
+		if( is_int( $p_value ) || is_float( $p_value ) ) {
+			return (int)$p_value !== 0;
+		}
+		if( is_string( $p_value ) ) {
+			if( $p_value !== '' && ord( $p_value ) === 1 && strlen( $p_value ) === 1 ) {
+				return true;
+			}
+			$t_value = strtolower( trim( $p_value ) );
+			return in_array( $t_value, array( '1', 't', 'true', 'yes', 'y' ), true );
+		}
+		return false;
+	}
+
+	public static function version_hidden_on_board( array $p_row ) {
+		return self::version_flag_on( $p_row['released'] ?? 0 )
+			|| self::version_flag_on( $p_row['obsolete'] ?? 0 );
+	}
+
+	/**
+	 * Whether to show a lane for the given target version name.
+	 *
+	 * @param int    $p_project_id  Project id.
+	 * @param string $p_version_name Target version (empty = none lane).
+	 *
+	 * @return bool
+	 */
+	public static function should_show_board_lane_for_version( $p_project_id, $p_version_name ) {
+		if( (string)$p_version_name === '' ) {
+			return true;
+		}
+		$t_version_id = version_get_id( $p_version_name, $p_project_id, true );
+		# Texto em target_version que não existe em mantis_project_version_table
+		# não vira lane (ex.: "0.9 (21set)" importado).
+		if( $t_version_id === false ) {
+			return false;
+		}
+		/** @noinspection PhpUnhandledExceptionInspection */
+		$t_row = version_cache_row( $t_version_id );
+		return !self::version_hidden_on_board( $t_row );
+	}
+
+	/**
+	 * Lane key for a bug. Unknown target versions share the "no version" lane.
+	 * Released or obsolete versions return null so the card is omitted.
+	 *
+	 * @param int    $p_project_id   Project id.
+	 * @param string $p_version_name Target version.
+	 *
+	 * @return string|null
+	 */
+	public static function board_lane_key_for_version( $p_project_id, $p_version_name ) {
+		$t_name = (string)$p_version_name;
+		if( $t_name === '' ) {
+			return '';
+		}
+		$t_version_id = version_get_id( $t_name, $p_project_id, true );
+		if( $t_version_id === false ) {
+			return '';
+		}
+		/** @noinspection PhpUnhandledExceptionInspection */
+		$t_row = version_cache_row( $t_version_id );
+		if( self::version_hidden_on_board( $t_row ) ) {
+			return null;
+		}
+		return $t_row['version'];
+	}
+
+	/**
+	 * Versions that appear as Kanban lanes (excludes released or obsolete).
+	 *
+	 * @param int $p_project_id Project id.
+	 *
+	 * @return array
+	 */
+	public static function board_version_rows( $p_project_id ) {
+		$t_rows = version_get_all_rows( $p_project_id, VERSION_FUTURE, false );
+		$t_visible = array();
+		foreach( $t_rows as $t_row ) {
+			if( self::version_hidden_on_board( $t_row ) ) {
+				continue;
+			}
+			if( version_is_released( (int)$t_row['id'] ) ) {
+				continue;
+			}
+			$t_visible[] = $t_row;
+		}
+		usort(
+			$t_visible,
+			function( $p_a, $p_b ) {
+				$t_cmp = self::version_row_date_order( $p_a ) - self::version_row_date_order( $p_b );
+				if( $t_cmp !== 0 ) {
+					return $t_cmp;
+				}
+				return (int)$p_a['id'] - (int)$p_b['id'];
+			}
+		);
+		return $t_visible;
+	}
+
 	public static function sorted_version_rows( $p_project_id ) {
 		$t_rows = version_get_all_rows( $p_project_id, VERSION_ALL, false );
 		usort(
@@ -374,7 +491,7 @@ class KanbanIssueHelper {
 	 */
 	public static function version_options( $p_project_id ) {
 		$t_versions = array();
-		foreach( self::sorted_version_rows( $p_project_id ) as $t_row ) {
+		foreach( self::board_version_rows( $p_project_id ) as $t_row ) {
 			$t_versions[] = $t_row['version'];
 		}
 		return $t_versions;
@@ -567,7 +684,7 @@ class KanbanIssueHelper {
 		}
 
 		$t_versions = array();
-		foreach( self::sorted_version_rows( $p_project_id ) as $t_row ) {
+		foreach( self::board_version_rows( $p_project_id ) as $t_row ) {
 			$t_versions[] = array(
 				'id' => (int)$t_row['id'],
 				'name' => $t_row['version'],
