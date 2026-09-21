@@ -142,34 +142,59 @@ class KanbanIssueHelper {
 	 * @return int[]
 	 */
 	public static function parse_gpc_bug_id_list( $p_var_name ) {
-		gpc_make_array( $p_var_name );
 		if( gpc_isset( $p_var_name ) ) {
 			$t_val = gpc_get( $p_var_name, '' );
-			if( is_array( $t_val ) ) {
-				return array_values( array_filter( array_map( 'intval', $t_val ) ) );
-			}
-			if( is_string( $t_val ) && $t_val !== '' ) {
-				$t_out = array();
-				foreach( explode( ',', $t_val ) as $t_part ) {
-					$t_id = (int)trim( $t_part );
-					if( $t_id > 0 ) {
-						$t_out[] = $t_id;
-					}
-				}
-				return $t_out;
+			$t_ids = self::expand_bug_id_list_value( $t_val );
+			if( !empty( $t_ids ) ) {
+				return $t_ids;
 			}
 		}
 
 		# Some clients send bug_ids[] as the literal key name.
 		$t_bracket_key = $p_var_name . '[]';
-		if( isset( $_POST[$t_bracket_key] ) && is_array( $_POST[$t_bracket_key] ) ) {
-			return array_values( array_filter( array_map( 'intval', $_POST[$t_bracket_key] ) ) );
+		if( isset( $_POST[$t_bracket_key] ) ) {
+			$t_ids = self::expand_bug_id_list_value( $_POST[$t_bracket_key] );
+			if( !empty( $t_ids ) ) {
+				return $t_ids;
+			}
 		}
-		if( isset( $_GET[$t_bracket_key] ) && is_array( $_GET[$t_bracket_key] ) ) {
-			return array_values( array_filter( array_map( 'intval', $_GET[$t_bracket_key] ) ) );
+		if( isset( $_GET[$t_bracket_key] ) ) {
+			$t_ids = self::expand_bug_id_list_value( $_GET[$t_bracket_key] );
+			if( !empty( $t_ids ) ) {
+				return $t_ids;
+			}
 		}
 
 		return array();
+	}
+
+	/**
+	 * Normalize POST/GET bug id list (scalar, comma-separated string, or array).
+	 *
+	 * @param mixed $p_value Raw GPC value.
+	 *
+	 * @return int[]
+	 */
+	private static function expand_bug_id_list_value( $p_value ) {
+		$t_out = array();
+		if( is_array( $p_value ) ) {
+			foreach( $p_value as $t_item ) {
+				$t_out = array_merge( $t_out, self::expand_bug_id_list_value( $t_item ) );
+			}
+		} elseif( is_string( $p_value ) && $p_value !== '' ) {
+			foreach( explode( ',', $p_value ) as $t_part ) {
+				$t_id = (int)trim( $t_part );
+				if( $t_id > 0 ) {
+					$t_out[] = $t_id;
+				}
+			}
+		} elseif( is_int( $p_value ) || is_float( $p_value ) ) {
+			$t_id = (int)$p_value;
+			if( $t_id > 0 ) {
+				$t_out[] = $t_id;
+			}
+		}
+		return array_values( array_unique( $t_out ) );
 	}
 
 	/**
